@@ -376,60 +376,102 @@
   <p class="status" id="status">Chargement de la configuration Vercel...</p>
 
   <section class="panel settings-panel">
-    <h2>À propos & réseaux sociaux</h2>
+    <h2>Contenu public</h2>
     <form class="form" id="settingsForm">
+      <div class="form-section-title">Phrase animée d'accueil</div>
+      <div class="field full">
+        <label for="settingIntroText">Texte affiché au chargement</label>
+        <input type="text" id="settingIntroText" data-setting-path="intro.text" placeholder="Welcome to ArchiLocal...">
+      </div>
+
       <div class="form-section-title">À propos</div>
       <div class="field">
-        <label for="settingAboutTitleMain">Titre principal</label>
+        <label for="settingAboutTitleMain">Première ligne du titre</label>
         <input type="text" id="settingAboutTitleMain" data-setting-path="about.titleMain">
       </div>
       <div class="field">
-        <label for="settingAboutTitleAccent">Titre accent</label>
+        <label for="settingAboutTitleAccent">Deuxième ligne du titre</label>
         <input type="text" id="settingAboutTitleAccent" data-setting-path="about.titleAccent">
       </div>
       <div class="field full">
-        <label for="settingAboutParagraph0">Paragraphe 1</label>
+        <label for="settingAboutParagraph0">Texte à propos 1</label>
         <textarea id="settingAboutParagraph0" data-setting-path="about.paragraphs.0"></textarea>
       </div>
       <div class="field full">
-        <label for="settingAboutParagraph1">Paragraphe 2</label>
+        <label for="settingAboutParagraph1">Texte à propos 2</label>
         <textarea id="settingAboutParagraph1" data-setting-path="about.paragraphs.1"></textarea>
       </div>
       <div class="field full">
-        <label for="settingAboutParagraph2">Paragraphe 3</label>
+        <label for="settingAboutParagraph2">Texte à propos 3</label>
         <textarea id="settingAboutParagraph2" data-setting-path="about.paragraphs.2"></textarea>
       </div>
+
+      <div class="form-section-title">Section Méthode</div>
       <div class="field">
-        <label for="settingStat0Number">Stat 1 nombre</label>
-        <input type="text" id="settingStat0Number" data-setting-path="about.stats.0.number">
+        <label for="settingApproachTitleMain">Première ligne du titre</label>
+        <input type="text" id="settingApproachTitleMain" data-setting-path="approach.titleMain">
       </div>
       <div class="field">
-        <label for="settingStat0Label">Stat 1 libellé</label>
-        <input type="text" id="settingStat0Label" data-setting-path="about.stats.0.label">
+        <label for="settingApproachTitleAccent">Mot ou phrase en italique</label>
+        <input type="text" id="settingApproachTitleAccent" data-setting-path="approach.titleAccent">
+      </div>
+      <div class="field full">
+        <label for="settingApproachDescription">Texte d'introduction</label>
+        <textarea id="settingApproachDescription" data-setting-path="approach.description"></textarea>
       </div>
       <div class="field">
-        <label for="settingStat1Number">Stat 2 nombre</label>
-        <input type="text" id="settingStat1Number" data-setting-path="about.stats.1.number">
+        <label for="settingPillar0Title">Bloc 1 - titre</label>
+        <input type="text" id="settingPillar0Title" data-setting-path="approach.pillars.0.title">
       </div>
       <div class="field">
-        <label for="settingStat1Label">Stat 2 libellé</label>
-        <input type="text" id="settingStat1Label" data-setting-path="about.stats.1.label">
+        <label for="settingPillar0Text">Bloc 1 - texte</label>
+        <input type="text" id="settingPillar0Text" data-setting-path="approach.pillars.0.text">
       </div>
       <div class="field">
-        <label for="settingStat2Number">Stat 3 nombre</label>
-        <input type="text" id="settingStat2Number" data-setting-path="about.stats.2.number">
+        <label for="settingPillar1Title">Bloc 2 - titre</label>
+        <input type="text" id="settingPillar1Title" data-setting-path="approach.pillars.1.title">
       </div>
       <div class="field">
-        <label for="settingStat2Label">Stat 3 libellé</label>
-        <input type="text" id="settingStat2Label" data-setting-path="about.stats.2.label">
+        <label for="settingPillar1Text">Bloc 2 - texte</label>
+        <input type="text" id="settingPillar1Text" data-setting-path="approach.pillars.1.text">
       </div>
       <div class="field">
-        <label for="settingStat3Number">Stat 4 nombre</label>
-        <input type="text" id="settingStat3Number" data-setting-path="about.stats.3.number">
+        <label for="settingPillar2Title">Bloc 3 - titre</label>
+        <input type="text" id="settingPillar2Title" data-setting-path="approach.pillars.2.title">
       </div>
       <div class="field">
-        <label for="settingStat3Label">Stat 4 libellé</label>
-        <input type="text" id="settingStat3Label" data-setting-path="about.stats.3.label">
+        <label for="settingPillar2Text">Bloc 3 - texte</label>
+        <input type="text" id="settingPillar2Text" data-setting-path="approach.pillars.2.text">
+      </div>
+
+      <div class="form-section-title">Section Contact</div>
+      <div class="field">
+        <label for="settingContactTitleMain">Première ligne du titre</label>
+        <input type="text" id="settingContactTitleMain" data-setting-path="contact.titleMain">
+      </div>
+      <div class="field">
+        <label for="settingContactTitleAccent">Mot ou phrase en italique</label>
+        <input type="text" id="settingContactTitleAccent" data-setting-path="contact.titleAccent">
+      </div>
+      <div class="field">
+        <label for="settingContactHeading">Sous-titre</label>
+        <input type="text" id="settingContactHeading" data-setting-path="contact.heading">
+      </div>
+      <div class="field">
+        <label for="settingContactEmail">Email affiché</label>
+        <input type="email" id="settingContactEmail" data-setting-path="contact.email">
+      </div>
+      <div class="field">
+        <label for="settingContactLocation">Localisation affichée</label>
+        <input type="text" id="settingContactLocation" data-setting-path="contact.location">
+      </div>
+      <div class="field">
+        <label for="settingContactFormNote">Note sous le formulaire</label>
+        <input type="text" id="settingContactFormNote" data-setting-path="contact.formNote">
+      </div>
+      <div class="field full">
+        <label for="settingContactText">Texte de présentation</label>
+        <textarea id="settingContactText" data-setting-path="contact.text"></textarea>
       </div>
 
       <div class="form-section-title">Réseaux sociaux</div>
@@ -455,7 +497,7 @@
       </div>
 
       <button class="submit" id="settingsSubmitButton" type="submit">
-        Sauvegarder à propos & réseaux
+        Sauvegarder le contenu public
         <span>→</span>
       </button>
     </form>

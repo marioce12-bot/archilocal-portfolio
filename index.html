@@ -768,6 +768,15 @@
     color: var(--dark);
     transform: translateY(-2px);
   }
+  .social-icon svg,
+  .social-icon img {
+    width: 18px;
+    height: 18px;
+    display: block;
+  }
+  .social-icon svg {
+    fill: currentColor;
+  }
 
   /* FORM */
   .contact-form {
@@ -1628,27 +1637,27 @@
     <div class="approche-header reveal">
       <div>
         <div class="section-label">Méthode</div>
-        <h2 class="section-title">L'Approche<br><em>ArchiLocal</em></h2>
+        <h2 class="section-title"><span id="approachTitleMain">L'Approche</span><br><em id="approachTitleAccent">ArchiLocal</em></h2>
       </div>
-      <p class="approche-desc">
+      <p class="approche-desc" id="approachDescription">
         Une architecture qui écoute la terre avant de parler à l'œil. Chaque projet traverse trois phases essentielles : comprendre le lieu, dialoguer avec le client, concevoir dans le respect du vivant.
       </p>
     </div>
     <div class="approche-pillars reveal">
       <div class="pillar">
         <div class="pillar-num">01</div>
-        <div class="pillar-title">Matériaux Locaux</div>
-        <p class="pillar-text">Latérite, pisé, bambou, bois d'acacia — nos matériaux proviennent du terroir béninois. Ils régulent naturellement la température et ancrent chaque bâtiment dans son paysage.</p>
+        <div class="pillar-title" id="approachPillar1Title">Matériaux Locaux</div>
+        <p class="pillar-text" id="approachPillar1Text">Latérite, pisé, bambou, bois d'acacia — nos matériaux proviennent du terroir béninois. Ils régulent naturellement la température et ancrent chaque bâtiment dans son paysage.</p>
       </div>
       <div class="pillar">
         <div class="pillar-num">02</div>
-        <div class="pillar-title">Design Contemporain</div>
-        <p class="pillar-text">L'héritage ne signifie pas l'immobilisme. Nous dialoguons entre les formes ancestrales et les lignes contemporaines pour créer une architecture d'aujourd'hui, à l'image de l'Afrique.</p>
+        <div class="pillar-title" id="approachPillar2Title">Design Contemporain</div>
+        <p class="pillar-text" id="approachPillar2Text">L'héritage ne signifie pas l'immobilisme. Nous dialoguons entre les formes ancestrales et les lignes contemporaines pour créer une architecture d'aujourd'hui, à l'image de l'Afrique.</p>
       </div>
       <div class="pillar">
         <div class="pillar-num">03</div>
-        <div class="pillar-title">Visualisation 3D</div>
-        <p class="pillar-text">Avant la première pierre, vous vivez déjà dans votre maison. Nos rendus 3D haute définition permettent d'affiner chaque détail avant l'exécution, pour zéro surprise sur chantier.</p>
+        <div class="pillar-title" id="approachPillar3Title">Visualisation 3D</div>
+        <p class="pillar-text" id="approachPillar3Text">Avant la première pierre, vous vivez déjà dans votre maison. Nos rendus 3D haute définition permettent d'affiner chaque détail avant l'exécution, pour zéro surprise sur chantier.</p>
       </div>
     </div>
   </div>
@@ -1659,9 +1668,9 @@
   <div class="contact-grid">
     <div class="contact-info reveal">
       <div class="section-label">Contact</div>
-      <h2 class="section-title">Parlons de<br>votre <em>Projet</em></h2>
-      <h3>Commençons ensemble</h3>
-      <p>
+      <h2 class="section-title"><span id="contactTitleMain">Parlons de</span><br><em id="contactTitleAccent">votre Projet</em></h2>
+      <h3 id="contactHeading">Commençons ensemble</h3>
+      <p id="contactText">
         Que vous soyez basé au Bénin ou membre de la diaspora africaine, je vous accompagne de la première esquisse jusqu'à la remise des clés.
       </p>
       <div class="contact-details">
@@ -1669,14 +1678,14 @@
           <div class="detail-icon">✉</div>
           <div class="detail-content">
             <label>Email</label>
-            <span>ulrike@archilocal.com</span>
+            <span id="contactEmail">ulrike@archilocal.com</span>
           </div>
         </div>
         <div class="contact-detail">
           <div class="detail-icon">◎</div>
           <div class="detail-content">
             <label>Localisation</label>
-            <span>Abomey-Calavi, Bénin</span>
+            <span id="contactLocation">Abomey-Calavi, Bénin</span>
           </div>
         </div>
       </div>
@@ -1730,7 +1739,7 @@
           Envoyer le message
           <span class="submit-arrow">→</span>
         </button>
-        <p class="form-note">Réponse garantie sous 48h. Première consultation offerte.</p>
+        <p class="form-note" id="contactFormNote">Réponse garantie sous 48h. Première consultation offerte.</p>
       </div>
 
       <div class="form-success" id="formSuccess">
@@ -1825,7 +1834,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
-  const INTRO_TEXT = 'Welcome to ArchiLocal...';
+  const DEFAULT_INTRO_TEXT = 'Welcome to ArchiLocal...';
   const INTRO_TYPE_SPEED = 70;
   const INTRO_HOLD_DELAY = 750;
 
@@ -1857,19 +1866,23 @@
   let servicesInitPromise = null;
   let siteConfig = {};
 
-  runIntro();
+  let introStarted = false;
 
-  function runIntro() {
+  function runIntro(text = DEFAULT_INTRO_TEXT) {
+    if (introStarted) return;
+    introStarted = true;
+
     const introScreen = document.getElementById('introScreen');
     const introMessage = document.getElementById('introMessage');
     if (!introScreen || !introMessage) return;
 
+    const introText = text || DEFAULT_INTRO_TEXT;
     let index = 0;
     const typeNext = () => {
-      introMessage.textContent = INTRO_TEXT.slice(0, index);
+      introMessage.textContent = introText.slice(0, index);
       index += 1;
 
-      if (index <= INTRO_TEXT.length) {
+      if (index <= introText.length) {
         setTimeout(typeNext, INTRO_TYPE_SPEED);
         return;
       }
@@ -2070,6 +2083,7 @@
         console.error(error);
         configError = error.message;
         configLoaded = false;
+        runIntro();
       }
     })();
 
@@ -2095,12 +2109,34 @@
 
   function applySiteConfig(site) {
     const about = mergeAbout(DEFAULT_ABOUT, site.about || {});
+    const approach = site.approach || {};
+    const contact = site.contact || {};
     const socials = normalizeSocials(site.socials);
+
+    runIntro(site.intro?.text || DEFAULT_INTRO_TEXT);
 
     setText('aboutTitleMain', about.titleMain);
     setText('aboutTitleAccent', about.titleAccent);
     renderParagraphs('aboutParagraphs', about.paragraphs);
     renderStats(about.stats);
+
+    setTextIfValue('approachTitleMain', approach.titleMain);
+    setTextIfValue('approachTitleAccent', approach.titleAccent);
+    setTextIfValue('approachDescription', approach.description);
+    setTextIfValue('approachPillar1Title', approach.pillars?.[0]?.title);
+    setTextIfValue('approachPillar1Text', approach.pillars?.[0]?.text);
+    setTextIfValue('approachPillar2Title', approach.pillars?.[1]?.title);
+    setTextIfValue('approachPillar2Text', approach.pillars?.[1]?.text);
+    setTextIfValue('approachPillar3Title', approach.pillars?.[2]?.title);
+    setTextIfValue('approachPillar3Text', approach.pillars?.[2]?.text);
+
+    setTextIfValue('contactTitleMain', contact.titleMain);
+    setTextIfValue('contactTitleAccent', contact.titleAccent);
+    setTextIfValue('contactHeading', contact.heading);
+    setTextIfValue('contactText', contact.text);
+    setTextIfValue('contactEmail', contact.email);
+    setTextIfValue('contactLocation', contact.location);
+    setTextIfValue('contactFormNote', contact.formNote);
 
     renderSocials('socialIcons', socials);
     renderSocials('footerSocials', socials);
@@ -2108,15 +2144,12 @@
 
   function mergeAbout(defaults, custom) {
     const customParagraphs = Array.isArray(custom.paragraphs) ? custom.paragraphs.filter(Boolean) : [];
-    const customStats = Array.isArray(custom.stats)
-      ? custom.stats.filter(item => item?.number || item?.label)
-      : [];
 
     return {
       titleMain: custom.titleMain || defaults.titleMain,
       titleAccent: custom.titleAccent || defaults.titleAccent,
       paragraphs: customParagraphs.length ? customParagraphs : defaults.paragraphs,
-      stats: customStats.length ? customStats : defaults.stats
+      stats: defaults.stats
     };
   }
 
@@ -2131,6 +2164,7 @@
       { key: 'clarivAfrica', label: 'Clariv Africa', icon: 'ca' },
       { key: 'linkedin', label: 'LinkedIn', icon: 'in' }
     ].map(item => ({
+      key: item.key,
       label: item.label,
       icon: item.icon,
       url: typeof socials[item.key] === 'string' ? socials[item.key] : socials[item.key]?.url || ''
@@ -2141,6 +2175,11 @@
     const element = document.getElementById(id);
     if (!element) return;
     element.textContent = value || '';
+  }
+
+  function setTextIfValue(id, value) {
+    if (!value) return;
+    setText(id, value);
   }
 
   function renderParagraphs(id, paragraphs = []) {
@@ -2183,9 +2222,21 @@
       link.rel = 'noopener noreferrer';
       link.title = social.label;
       link.setAttribute('aria-label', social.label);
-      link.textContent = social.icon || social.label.slice(0, 2);
+      link.innerHTML = getSocialIconMarkup(social);
       container.appendChild(link);
     });
+  }
+
+  function getSocialIconMarkup(social) {
+    const key = social.key || social.label?.toLowerCase().replace(/\s+/g, '');
+    const icons = {
+      facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5.02 3.66 9.18 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.52 1.49-3.91 3.77-3.91 1.09 0 2.23.2 2.23.2v2.47h-1.26c-1.24 0-1.63.78-1.63 1.57v1.89h2.77l-.44 2.91h-2.33V22C18.34 21.24 22 17.08 22 12.06z"/></svg>',
+      instagram: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6zm9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5zM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>',
+      linkedin: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4V23h-4V8zm7.5 0h3.83v2.05h.05c.53-1 1.84-2.05 3.79-2.05 4.05 0 4.8 2.67 4.8 6.14V23h-4v-7.86c0-1.88-.03-4.29-2.61-4.29-2.62 0-3.02 2.05-3.02 4.15V23h-4V8z" transform="translate(1.5)"/></svg>'
+    };
+
+    if (icons[key]) return icons[key];
+    return `<img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(social.url)}&sz=64" alt="" aria-hidden="true">`;
   }
 
   function normalizeProject(raw) {
