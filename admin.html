@@ -123,6 +123,41 @@
     margin-top: 28px;
   }
 
+  .settings-tabs {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+
+  .settings-tab {
+    border: 1px solid rgba(44,44,44,0.18);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+
+  .settings-tab.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--dark);
+  }
+
+  .settings-tab:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
+  }
+
+  .settings-hidden {
+    display: none !important;
+  }
+
   .form-section-title {
     grid-column: 1 / -1;
     margin-top: 12px;
@@ -287,6 +322,31 @@
     color: var(--danger);
   }
 
+  .admin-toast {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 50;
+    max-width: min(360px, calc(100% - 48px));
+    padding: 16px 20px;
+    background: var(--gold);
+    color: var(--dark);
+    box-shadow: 0 18px 48px rgba(44,44,44,0.18);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    transform: translateY(24px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .admin-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   @media (max-width: 900px) {
     .hero,
     .layout {
@@ -321,8 +381,17 @@
     }
     .field.full,
     .form-section-title,
+    .settings-tabs,
     .submit {
       grid-column: auto;
+    }
+    .settings-tabs {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .settings-tab {
+      flex: 0 0 auto;
     }
     input,
     select,
@@ -373,18 +442,26 @@
     </p>
   </section>
 
-  <p class="status" id="status">Chargement de la configuration Vercel...</p>
+  <p class="status" id="status">Chargement de l'administration...</p>
 
   <section class="panel settings-panel">
     <h2>Contenu public</h2>
     <form class="form" id="settingsForm">
-      <div class="form-section-title">Phrase animée d'accueil</div>
+      <div class="settings-tabs" role="tablist" aria-label="Sections à modifier">
+        <button class="settings-tab active" type="button" data-settings-tab="intro">Phrase animée</button>
+        <button class="settings-tab" type="button" data-settings-tab="about">À propos</button>
+        <button class="settings-tab" type="button" data-settings-tab="approach">Méthode</button>
+        <button class="settings-tab" type="button" data-settings-tab="contact">Contact</button>
+        <button class="settings-tab" type="button" data-settings-tab="socials">Réseaux</button>
+      </div>
+
+      <div class="form-section-title" data-settings-title="intro">Phrase animée d'accueil</div>
       <div class="field full">
         <label for="settingIntroText">Texte affiché au chargement</label>
         <input type="text" id="settingIntroText" data-setting-path="intro.text" placeholder="Welcome to ArchiLocal...">
       </div>
 
-      <div class="form-section-title">À propos</div>
+      <div class="form-section-title" data-settings-title="about">À propos</div>
       <div class="field">
         <label for="settingAboutTitleMain">Première ligne du titre</label>
         <input type="text" id="settingAboutTitleMain" data-setting-path="about.titleMain">
@@ -406,7 +483,7 @@
         <textarea id="settingAboutParagraph2" data-setting-path="about.paragraphs.2"></textarea>
       </div>
 
-      <div class="form-section-title">Section Méthode</div>
+      <div class="form-section-title" data-settings-title="approach">Section Méthode</div>
       <div class="field">
         <label for="settingApproachTitleMain">Première ligne du titre</label>
         <input type="text" id="settingApproachTitleMain" data-setting-path="approach.titleMain">
@@ -444,7 +521,7 @@
         <input type="text" id="settingPillar2Text" data-setting-path="approach.pillars.2.text">
       </div>
 
-      <div class="form-section-title">Section Contact</div>
+      <div class="form-section-title" data-settings-title="contact">Section Contact</div>
       <div class="field">
         <label for="settingContactTitleMain">Première ligne du titre</label>
         <input type="text" id="settingContactTitleMain" data-setting-path="contact.titleMain">
@@ -474,7 +551,7 @@
         <textarea id="settingContactText" data-setting-path="contact.text"></textarea>
       </div>
 
-      <div class="form-section-title">Réseaux sociaux</div>
+      <div class="form-section-title" data-settings-title="socials">Réseaux sociaux</div>
       <div class="field">
         <label for="settingSocialFacebook">Facebook</label>
         <input type="url" id="settingSocialFacebook" data-social-key="facebook">
@@ -557,6 +634,8 @@
   </section>
 </main>
 
+<div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
@@ -583,11 +662,46 @@
   const submitButton = document.getElementById('submitButton');
   const settingsSubmitButton = document.getElementById('settingsSubmitButton');
   const projectsEl = document.getElementById('projects');
+  const adminToast = document.getElementById('adminToast');
+  let toastTimeout = null;
 
+  initializeSettingsTabs();
   initializeAdmin();
 
+  function initializeSettingsTabs() {
+    const tabs = Array.from(document.querySelectorAll('[data-settings-tab]'));
+    const formChildren = Array.from(settingsForm.children);
+    let currentSection = '';
+
+    formChildren.forEach(child => {
+      if (child.matches('[data-settings-title]')) {
+        currentSection = child.dataset.settingsTitle;
+      }
+
+      if (currentSection && !child.matches('.settings-tabs') && child.type !== 'submit') {
+        child.dataset.settingsSection = currentSection;
+      }
+    });
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => showSettingsSection(tab.dataset.settingsTab));
+    });
+
+    showSettingsSection(tabs[0]?.dataset.settingsTab || 'intro');
+  }
+
+  function showSettingsSection(section) {
+    document.querySelectorAll('[data-settings-tab]').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.settingsTab === section);
+    });
+
+    settingsForm.querySelectorAll('[data-settings-section]').forEach(element => {
+      element.classList.toggle('settings-hidden', element.dataset.settingsSection !== section);
+    });
+  }
+
   async function initializeAdmin() {
-    setStatus('Chargement de la configuration Vercel...');
+    setStatus('Chargement de l\'administration...');
     try {
       const response = await fetch('/api/config', { cache: 'no-store' });
       const config = await response.json();
@@ -612,9 +726,9 @@
       await loadSettings();
 
       if (!imgbbUploadAvailable) {
-        setStatus('Connecté à Firestore. Paramètres éditables. Ajoute IMGBB_API_KEY dans Vercel pour publier des projets avec photos.');
+        setStatus('Contenu prêt. Ajoute la clé ImgBB pour publier des projets avec photos.');
       } else {
-        setStatus(`Connecté à Firestore. Collections : ${settingsCollection} / ${projectCollection}`);
+        setStatus('Administration prête.');
       }
 
       await loadProjects();
@@ -647,12 +761,12 @@
     event.preventDefault();
 
     if (!db) {
-      setStatus('Configuration Firebase indisponible. Impossible de sauvegarder les paramètres.');
+      setStatus('Connexion indisponible. Impossible de sauvegarder pour le moment.');
       return;
     }
 
     settingsSubmitButton.disabled = true;
-    setStatus('Sauvegarde des paramètres du site...');
+    setStatus('Sauvegarde en cours...');
 
     try {
       const settings = buildSettingsFromForm();
@@ -660,10 +774,11 @@
         ...settings,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
-      setStatus('Paramètres du site sauvegardés.');
+      setStatus('Modifications enregistrées.');
+      showToast('Modifications enregistrées');
     } catch (error) {
       console.error(error);
-      setStatus(`Erreur de sauvegarde des paramètres : ${error.message}`);
+      setStatus(`Erreur de sauvegarde : ${error.message}`);
     } finally {
       settingsSubmitButton.disabled = false;
     }
@@ -778,7 +893,7 @@
     event.preventDefault();
 
     if (!db || !imgbbUploadAvailable) {
-      setStatus('Configuration Vercel incomplète. Vérifie Firebase et IMGBB_API_KEY.');
+      setStatus('Publication indisponible. Vérifie la configuration des photos.');
       return;
     }
 
@@ -807,10 +922,11 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      setStatus('Enregistrement dans Firestore...');
+      setStatus('Publication du projet...');
       await db.collection(projectCollection).add(project);
       form.reset();
       setStatus('Projet ajouté avec succès.');
+      showToast('Projet ajouté avec succès');
       await loadProjects();
     } catch (error) {
       console.error(error);
@@ -833,6 +949,7 @@
     try {
       await db.collection(projectCollection).doc(projectId).delete();
       setStatus('Projet supprimé.');
+      showToast('Projet supprimé');
       await loadProjects();
     } catch (error) {
       console.error(error);
@@ -858,6 +975,17 @@
 
   function setStatus(message) {
     statusEl.textContent = message;
+  }
+
+  function showToast(message) {
+    if (!adminToast) return;
+    adminToast.textContent = message;
+    adminToast.classList.add('show');
+
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => {
+      adminToast.classList.remove('show');
+    }, 2800);
   }
 
   function escapeHtml(value) {
