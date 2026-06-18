@@ -1523,28 +1523,12 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
-  const adminConfig = {
-    imgbbApiKey: 'REMPLACER_PAR_VOTRE_CLE_IMGBB',
-    firebase: {
-      apiKey: 'REMPLACER_PAR_VOTRE_API_KEY',
-      authDomain: 'REMPLACER_PAR_VOTRE_AUTH_DOMAIN',
-      projectId: 'REMPLACER_PAR_VOTRE_PROJECT_ID',
-      storageBucket: 'REMPLACER_PAR_VOTRE_STORAGE_BUCKET',
-      messagingSenderId: 'REMPLACER_PAR_VOTRE_MESSAGING_SENDER_ID',
-      appId: 'REMPLACER_PAR_VOTRE_APP_ID'
-    }
-  };
-
   const PROJECT_COLLECTION = 'archilocalProjects';
-  const isFirebaseConfigured = !adminConfig.firebase.apiKey.startsWith('REMPLACER_') &&
-    !adminConfig.firebase.projectId.startsWith('REMPLACER_');
-  const isImgBBConfigured = !adminConfig.imgbbApiKey.startsWith('REMPLACER_');
   let db = null;
-
-  if (isFirebaseConfigured && window.firebase) {
-    firebase.initializeApp(adminConfig.firebase);
-    db = firebase.firestore();
-  }
+  let configLoaded = false;
+  let configError = '';
+  let imgbbUploadAvailable = false;
+  let servicesInitPromise = null;
 
   // CUSTOM CURSOR
   const cursor = document.getElementById('cursor');
@@ -1649,13 +1633,15 @@
   const adminProjectList = document.getElementById('adminProjectList');
   const galerieGrid = document.querySelector('.galerie-grid');
 
-  function openAdmin() {
+  async function openAdmin() {
     adminShell.classList.add('active');
     adminShell.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    setAdminStatus('Chargement de la configuration Vercel...');
+    await initializeServices();
     setAdminStatus(isAdminConfigured()
       ? 'Espace prêt : les photos seront envoyées sur ImgBB et le projet sera enregistré dans Firebase.'
-      : 'Configuration manquante : remplace les valeurs Firebase et ImgBB dans adminConfig.');
+      : `Configuration Vercel manquante : ${configError || 'vérifie les variables d\'environnement.'}`);
   }
 
   function closeAdmin() {
@@ -1666,11 +1652,45 @@
   }
 
   function isAdminConfigured() {
-    return Boolean(db && isImgBBConfigured);
+    return Boolean(db && imgbbUploadAvailable);
   }
 
   function setAdminStatus(message) {
     adminStatus.textContent = message;
+  }
+
+  async function initializeServices() {
+    if (servicesInitPromise) return servicesInitPromise;
+
+    servicesInitPromise = (async () => {
+      try {
+        const response = await fetch('/api/config', { cache: 'no-store' });
+        const config = await response.json();
+
+        if (!response.ok) {
+          throw new Error(config.error || 'configuration indisponible');
+        }
+
+        if (!window.firebase) {
+          throw new Error('Firebase SDK indisponible');
+        }
+
+        if (!firebase.apps.length) {
+          firebase.initializeApp(config.firebase);
+        }
+
+        db = firebase.firestore();
+        imgbbUploadAvailable = Boolean(config.imgbbUploadAvailable);
+        configLoaded = true;
+        await loadProjects();
+      } catch (error) {
+        console.error(error);
+        configError = error.message;
+        configLoaded = false;
+      }
+    })();
+
+    return servicesInitPromise;
   }
 
   function normalizeProject(raw) {
@@ -1744,7 +1764,7 @@
     const formData = new FormData();
     formData.append('image', file);
 
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(adminConfig.imgbbApiKey)}`, {
+    const response = await fetch('/api/imgbb-upload', {
       method: 'POST',
       body: formData
     });
@@ -1752,14 +1772,14 @@
     if (!response.ok || !result.success) {
       throw new Error(result?.error?.message || 'Upload ImgBB impossible');
     }
-    return result.data.display_url || result.data.url;
+    return result.url;
   }
 
   adminForm.addEventListener('submit', async event => {
     event.preventDefault();
 
     if (!isAdminConfigured()) {
-      setAdminStatus('Configuration manquante : renseigne les clés Firebase et ImgBB dans adminConfig.');
+      setAdminStatus(`Configuration Vercel manquante : ${configError || 'vérifie les variables d\'environnement.'}`);
       return;
     }
 
@@ -1825,7 +1845,7 @@
   });
 
   if (location.hash === '#admin') openAdmin();
-  loadProjects();
+  initializeServices();
 </script>
 </body>
 </html>
