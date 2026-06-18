@@ -33,6 +33,55 @@
     overflow-x: hidden;
   }
 
+  body.intro-active {
+    overflow: hidden;
+  }
+
+  .intro-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse 42% 55% at 68% 42%, rgba(44,44,44,0.06) 0%, transparent 66%),
+      linear-gradient(160deg, #FAFAFA 0%, #F2F2F0 52%, #E8E8E4 100%);
+    transition: opacity 0.7s ease, visibility 0.7s ease;
+  }
+  .intro-screen.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .intro-message {
+    padding: 0 24px;
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(38px, 7vw, 84px);
+    font-weight: 300;
+    line-height: 1.05;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+  .intro-message::after {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 0.82em;
+    margin-left: 8px;
+    background: var(--gold);
+    transform: translateY(0.08em);
+    animation: introCaret 0.75s steps(1) infinite;
+  }
+  .intro-screen.hide .intro-message::after {
+    animation: none;
+  }
+  @keyframes introCaret {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+
   /* CUSTOM CURSOR */
   .cursor {
     position: fixed;
@@ -1308,7 +1357,12 @@
   }
 </style>
 </head>
-<body>
+<body class="intro-active">
+
+<!-- INTRO -->
+<div class="intro-screen" id="introScreen" aria-live="polite" aria-label="Welcome to ArchiLocal">
+  <div class="intro-message" id="introMessage"></div>
+</div>
 
 <!-- CURSOR -->
 <div class="cursor" id="cursor"></div>
@@ -1771,6 +1825,10 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
+  const INTRO_TEXT = 'Welcome to ArchiLocal...';
+  const INTRO_TYPE_SPEED = 70;
+  const INTRO_HOLD_DELAY = 750;
+
   const DEFAULT_PROJECT_COLLECTION = 'archilocal_portfolio_projects';
   const DEFAULT_SETTINGS_COLLECTION = 'archilocal_settings';
   const DEFAULT_SITE_SETTINGS_DOC_ID = 'site';
@@ -1798,6 +1856,33 @@
   let imgbbUploadAvailable = false;
   let servicesInitPromise = null;
   let siteConfig = {};
+
+  runIntro();
+
+  function runIntro() {
+    const introScreen = document.getElementById('introScreen');
+    const introMessage = document.getElementById('introMessage');
+    if (!introScreen || !introMessage) return;
+
+    let index = 0;
+    const typeNext = () => {
+      introMessage.textContent = INTRO_TEXT.slice(0, index);
+      index += 1;
+
+      if (index <= INTRO_TEXT.length) {
+        setTimeout(typeNext, INTRO_TYPE_SPEED);
+        return;
+      }
+
+      setTimeout(() => {
+        introScreen.classList.add('hide');
+        document.body.classList.remove('intro-active');
+        setTimeout(() => introScreen.remove(), 800);
+      }, INTRO_HOLD_DELAY);
+    };
+
+    typeNext();
+  }
 
   // CUSTOM CURSOR
   const cursor = document.getElementById('cursor');
