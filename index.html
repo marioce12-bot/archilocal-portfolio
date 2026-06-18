@@ -1037,6 +1037,237 @@
     .admin-field.full,
     .admin-submit { grid-column: auto; }
   }
+
+  @media (hover: none), (pointer: coarse) {
+    body,
+    .filter-tab,
+    .projet-card,
+    .form-group input,
+    .form-group select,
+    .form-group textarea,
+    .form-submit {
+      cursor: auto;
+    }
+    .cursor,
+    .cursor-ring {
+      display: none;
+    }
+    .projet-overlay {
+      opacity: 1;
+      background: linear-gradient(to top, rgba(240,238,234,0.94) 0%, rgba(240,238,234,0.2) 58%, transparent 100%);
+    }
+    .projet-label {
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    nav {
+      padding: 24px 32px;
+    }
+    .nav-links {
+      gap: 26px;
+    }
+    section {
+      padding: 96px 32px;
+    }
+    .hero-content {
+      padding: 0 32px;
+    }
+    .hero-accent {
+      right: -80px;
+      width: 340px;
+      height: 340px;
+    }
+    .apropos-grid,
+    .approche-header,
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .galerie-header {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .projet-card:nth-child(n),
+    .projet-card.dynamic-project {
+      grid-column: span 6;
+      grid-row: auto;
+    }
+    .projet-card:nth-child(1) .projet-visual {
+      min-height: 360px;
+    }
+    footer {
+      padding: 40px 32px;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 720px) {
+    nav {
+      position: absolute;
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 18px;
+      padding: 22px 20px;
+      background: linear-gradient(to bottom, rgba(250,250,250,0.98) 0%, rgba(250,250,250,0.78) 76%, transparent 100%);
+    }
+    .nav-logo {
+      font-size: 18px;
+      letter-spacing: 0.22em;
+    }
+    .nav-links {
+      width: 100%;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .nav-links::-webkit-scrollbar {
+      display: none;
+    }
+    .nav-links a {
+      white-space: nowrap;
+      font-size: 9px;
+    }
+    #accueil {
+      min-height: 92vh;
+      align-items: center;
+      padding: 150px 0 64px;
+    }
+    .hero-content {
+      padding: 0 20px;
+    }
+    .hero-eyebrow {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 10px;
+      letter-spacing: 0.24em;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .hero-title {
+      font-size: clamp(52px, 18vw, 78px);
+    }
+    .hero-sub {
+      font-size: 14px;
+      line-height: 1.7;
+      margin-bottom: 34px;
+    }
+    .hero-cta {
+      width: 100%;
+      justify-content: space-between;
+      padding: 15px 22px;
+    }
+    .hero-scroll,
+    .hero-accent {
+      display: none;
+    }
+    .hero-grid {
+      background-size: 48px 48px;
+    }
+    section {
+      padding: 78px 20px;
+    }
+    .section-label {
+      letter-spacing: 0.24em;
+    }
+    #apropos::before {
+      display: none;
+    }
+    .apropos-stats,
+    .approche-pillars,
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    .stat-card,
+    .pillar {
+      padding: 32px 24px;
+    }
+    .galerie-header {
+      margin-bottom: 40px;
+    }
+    .filter-tabs {
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+    }
+    .filter-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .filter-tab {
+      flex: 0 0 auto;
+      cursor: auto;
+    }
+    .galerie-grid {
+      display: block;
+    }
+    .projet-card,
+    .projet-card:nth-child(n),
+    .projet-card.dynamic-project {
+      display: block;
+      margin-bottom: 18px;
+      width: 100%;
+    }
+    .projet-visual,
+    .projet-card:nth-child(1) .projet-visual,
+    .projet-photo {
+      min-height: 320px;
+    }
+    .projet-overlay {
+      padding: 24px;
+    }
+    .contact-grid {
+      gap: 44px;
+    }
+    .contact-detail {
+      gap: 14px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      font-size: 16px;
+    }
+    footer {
+      align-items: flex-start;
+      flex-direction: column;
+      padding: 36px 20px;
+    }
+    .footer-links {
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+    .notification {
+      left: 20px;
+      right: 20px;
+      bottom: 20px;
+      transform: translateY(100px);
+      text-align: center;
+    }
+    .notification.show {
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 380px) {
+    .hero-title {
+      font-size: 48px;
+    }
+    .section-title {
+      font-size: 34px;
+    }
+    .projet-visual,
+    .projet-card:nth-child(1) .projet-visual,
+    .projet-photo {
+      min-height: 280px;
+    }
+    .projet-name {
+      font-size: 23px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -1843,10 +2074,10 @@
   }
 
   window.addEventListener('hashchange', () => {
-    if (location.hash === '#admin') openAdmin();
+    if (location.hash === '#admin') window.location.href = '/admin.html';
   });
 
-  if (location.hash === '#admin') openAdmin();
+  if (location.hash === '#admin') window.location.href = '/admin.html';
   initializeServices();
 </script>
 </body>
