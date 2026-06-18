@@ -1806,7 +1806,7 @@
     </form>
 
     <p class="admin-status" id="adminStatus">
-      Configure Firebase et ImgBB dans le script avant d'utiliser cet espace.
+      Configure les services avant d'utiliser cet espace.
     </p>
 
     <div class="admin-list">
@@ -1844,13 +1844,14 @@
   const DEFAULT_ABOUT = {
     titleMain: 'Ulrike',
     titleAccent: 'Salako',
+    experienceYears: '8',
     paragraphs: [
       "Architecte freelance basée à Abomey-Calavi, Bénin, je crée des espaces qui honorent l'héritage architectural africain tout en répondant aux exigences de la vie contemporaine.",
       "Fondatrice d'ArchiLocal, je travaille avec des clients locaux et la diaspora africaine à travers une approche alliant matériaux naturels, efficacité thermique et visualisation 3D avancée.",
       "Chaque projet naît d'une écoute profonde du lieu, des personnes et du climat — pour concevoir une architecture qui appartient pleinement à l'Afrique de demain."
     ],
     stats: [
-      { number: '40+', label: 'Projets réalisés' },
+      { number: '0', label: 'Projets réalisés' },
       { number: '8', label: "Années d'expérience" },
       { number: '100%', label: 'Matériaux locaux' },
       { number: '3D', label: 'Visualisation avancée' }
@@ -1865,6 +1866,7 @@
   let imgbbUploadAvailable = false;
   let servicesInitPromise = null;
   let siteConfig = {};
+  let currentProjectCount = 0;
 
   let introStarted = false;
 
@@ -2029,11 +2031,11 @@
     adminShell.classList.add('active');
     adminShell.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    setAdminStatus('Chargement de la configuration Vercel...');
+    setAdminStatus('Chargement de la configuration...');
     await initializeServices();
     setAdminStatus(isAdminConfigured()
-      ? 'Espace prêt : les photos seront envoyées sur ImgBB et le projet sera enregistré dans Firebase.'
-      : `Configuration Vercel manquante : ${configError || 'vérifie les variables d\'environnement.'}`);
+      ? 'Espace prêt : les photos et le projet seront enregistrés.'
+      : `Configuration manquante : ${configError || 'vérifie les réglages.'}`);
   }
 
   function closeAdmin() {
@@ -2064,7 +2066,7 @@
         }
 
         if (!window.firebase) {
-          throw new Error('Firebase SDK indisponible');
+          throw new Error('service de sauvegarde indisponible');
         }
 
         if (!firebase.apps.length) {
@@ -2115,10 +2117,10 @@
 
     runIntro(site.intro?.text || DEFAULT_INTRO_TEXT);
 
-    setText('aboutTitleMain', about.titleMain);
-    setText('aboutTitleAccent', about.titleAccent);
+    setText('aboutTitleMain', DEFAULT_ABOUT.titleMain);
+    setText('aboutTitleAccent', DEFAULT_ABOUT.titleAccent);
     renderParagraphs('aboutParagraphs', about.paragraphs);
-    renderStats(about.stats);
+    renderStats(about);
 
     setTextIfValue('approachTitleMain', approach.titleMain);
     setTextIfValue('approachTitleAccent', approach.titleAccent);
@@ -2143,13 +2145,20 @@
   }
 
   function mergeAbout(defaults, custom) {
+    const textParagraphs = typeof custom.text === 'string'
+      ? custom.text.split(/\n\s*\n|\n/).map(text => text.trim()).filter(Boolean)
+      : [];
     const customParagraphs = Array.isArray(custom.paragraphs) ? custom.paragraphs.filter(Boolean) : [];
+    const experienceYears = custom.experienceYears || defaults.experienceYears;
 
     return {
-      titleMain: custom.titleMain || defaults.titleMain,
-      titleAccent: custom.titleAccent || defaults.titleAccent,
-      paragraphs: customParagraphs.length ? customParagraphs : defaults.paragraphs,
-      stats: defaults.stats
+      paragraphs: textParagraphs.length ? textParagraphs : (customParagraphs.length ? customParagraphs : defaults.paragraphs),
+      experienceYears,
+      stats: [
+        { number: String(currentProjectCount), label: 'Projets réalisés' },
+        { number: String(experienceYears || defaults.experienceYears), label: "Années d'expérience" },
+        ...defaults.stats.slice(2)
+      ]
     };
   }
 
@@ -2194,10 +2203,16 @@
     });
   }
 
-  function renderStats(stats = []) {
+  function renderStats(about = DEFAULT_ABOUT) {
     const container = document.getElementById('aboutStats');
     if (!container) return;
     container.innerHTML = '';
+    const experienceYears = about.experienceYears || DEFAULT_ABOUT.experienceYears;
+    const stats = [
+      { number: String(currentProjectCount), label: 'Projets réalisés' },
+      { number: String(experienceYears), label: "Années d'expérience" },
+      ...DEFAULT_ABOUT.stats.slice(2)
+    ];
     stats.forEach(stat => {
       const card = document.createElement('div');
       card.className = 'stat-card';
@@ -2292,6 +2307,12 @@
     document.querySelectorAll('.dynamic-project').forEach(card => card.remove());
     projects.map(normalizeProject).forEach(renderProject);
     renderAdminList(projects.map(normalizeProject));
+    updateProjectCountStat(projects.length);
+  }
+
+  function updateProjectCountStat(count) {
+    currentProjectCount = Number.isFinite(count) ? count : 0;
+    renderStats(mergeAbout(DEFAULT_ABOUT, siteConfig.about || {}));
   }
 
   async function loadProjects() {
@@ -2302,7 +2323,7 @@
       renderDynamicProjects(projects);
     } catch (error) {
       console.error(error);
-      setAdminStatus('Impossible de charger les projets Firebase. Vérifie les règles Firestore et la configuration.');
+      setAdminStatus('Impossible de charger les projets pour le moment.');
     }
   }
 
@@ -2316,7 +2337,7 @@
     });
     const result = await response.json();
     if (!response.ok || !result.success) {
-      throw new Error(result?.error?.message || 'Upload ImgBB impossible');
+      throw new Error(result?.error?.message || 'Envoi des photos impossible');
     }
     return result.url;
   }
@@ -2325,7 +2346,7 @@
     event.preventDefault();
 
     if (!isAdminConfigured()) {
-      setAdminStatus(`Configuration Vercel manquante : ${configError || 'vérifie les variables d\'environnement.'}`);
+      setAdminStatus(`Configuration manquante : ${configError || 'vérifie les réglages.'}`);
       return;
     }
 
@@ -2336,7 +2357,7 @@
     }
 
     adminSubmit.disabled = true;
-    setAdminStatus('Upload des photos sur ImgBB...');
+    setAdminStatus('Envoi des photos...');
 
     try {
       const imageUrls = [];
@@ -2354,7 +2375,7 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      setAdminStatus('Enregistrement du projet dans Firebase...');
+      setAdminStatus('Enregistrement du projet...');
       await db.collection(projectCollection).add(project);
       adminForm.reset();
       setAdminStatus('Projet ajouté avec succès.');
@@ -2362,7 +2383,7 @@
       await loadProjects();
     } catch (error) {
       console.error(error);
-      setAdminStatus(`Erreur : ${error.message}`);
+      setAdminStatus('Impossible de publier ce projet pour le moment.');
     } finally {
       adminSubmit.disabled = false;
     }

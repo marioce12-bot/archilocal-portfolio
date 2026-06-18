@@ -314,7 +314,24 @@
 
   .project-actions {
     display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
     justify-content: flex-end;
+  }
+
+  .secondary {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .field-note {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
   }
 
   .danger {
@@ -382,8 +399,12 @@
     .field.full,
     .form-section-title,
     .settings-tabs,
-    .submit {
+    .submit,
+    .secondary {
       grid-column: auto;
+    }
+    .secondary {
+      justify-self: stretch;
     }
     .settings-tabs {
       flex-wrap: nowrap;
@@ -438,7 +459,7 @@
       <h1>Gérer les projets</h1>
     </div>
     <p class="intro">
-      Ajoute les projets ArchiLocal, téléverse leurs photos sur ImgBB et supprime les projets qui ne doivent plus apparaître dans le portfolio public.
+      Ajoute les projets ArchiLocal, téléverse leurs photos et supprime les projets qui ne doivent plus apparaître dans le portfolio public.
     </p>
   </section>
 
@@ -457,82 +478,54 @@
 
       <div class="form-section-title" data-settings-title="intro">Phrase animée d'accueil</div>
       <div class="field full">
-        <label for="settingIntroText">Texte affiché au chargement</label>
+        <label for="settingIntroText">Phrase animée</label>
         <input type="text" id="settingIntroText" data-setting-path="intro.text" placeholder="Welcome to ArchiLocal...">
       </div>
 
       <div class="form-section-title" data-settings-title="about">À propos</div>
+      <div class="field full">
+        <label for="settingAboutText">Texte à propos</label>
+        <textarea id="settingAboutText" data-setting-path="about.text"></textarea>
+      </div>
       <div class="field">
-        <label for="settingAboutTitleMain">Première ligne du titre</label>
-        <input type="text" id="settingAboutTitleMain" data-setting-path="about.titleMain">
-      </div>
-      <div class="field">
-        <label for="settingAboutTitleAccent">Deuxième ligne du titre</label>
-        <input type="text" id="settingAboutTitleAccent" data-setting-path="about.titleAccent">
-      </div>
-      <div class="field full">
-        <label for="settingAboutParagraph0">Texte à propos 1</label>
-        <textarea id="settingAboutParagraph0" data-setting-path="about.paragraphs.0"></textarea>
-      </div>
-      <div class="field full">
-        <label for="settingAboutParagraph1">Texte à propos 2</label>
-        <textarea id="settingAboutParagraph1" data-setting-path="about.paragraphs.1"></textarea>
-      </div>
-      <div class="field full">
-        <label for="settingAboutParagraph2">Texte à propos 3</label>
-        <textarea id="settingAboutParagraph2" data-setting-path="about.paragraphs.2"></textarea>
+        <label for="settingAboutExperienceYears">Années d'expérience</label>
+        <input type="number" id="settingAboutExperienceYears" data-setting-path="about.experienceYears" min="0" step="1" inputmode="numeric">
       </div>
 
       <div class="form-section-title" data-settings-title="approach">Section Méthode</div>
-      <div class="field">
-        <label for="settingApproachTitleMain">Première ligne du titre</label>
-        <input type="text" id="settingApproachTitleMain" data-setting-path="approach.titleMain">
-      </div>
-      <div class="field">
-        <label for="settingApproachTitleAccent">Mot ou phrase en italique</label>
-        <input type="text" id="settingApproachTitleAccent" data-setting-path="approach.titleAccent">
-      </div>
       <div class="field full">
-        <label for="settingApproachDescription">Texte d'introduction</label>
+        <label for="settingApproachDescription">Texte de la section Méthode</label>
         <textarea id="settingApproachDescription" data-setting-path="approach.description"></textarea>
       </div>
       <div class="field">
-        <label for="settingPillar0Title">Bloc 1 - titre</label>
+        <label for="settingPillar0Title">Titre méthode 1</label>
         <input type="text" id="settingPillar0Title" data-setting-path="approach.pillars.0.title">
       </div>
       <div class="field">
-        <label for="settingPillar0Text">Bloc 1 - texte</label>
+        <label for="settingPillar0Text">Texte méthode 1</label>
         <input type="text" id="settingPillar0Text" data-setting-path="approach.pillars.0.text">
       </div>
       <div class="field">
-        <label for="settingPillar1Title">Bloc 2 - titre</label>
+        <label for="settingPillar1Title">Titre méthode 2</label>
         <input type="text" id="settingPillar1Title" data-setting-path="approach.pillars.1.title">
       </div>
       <div class="field">
-        <label for="settingPillar1Text">Bloc 2 - texte</label>
+        <label for="settingPillar1Text">Texte méthode 2</label>
         <input type="text" id="settingPillar1Text" data-setting-path="approach.pillars.1.text">
       </div>
       <div class="field">
-        <label for="settingPillar2Title">Bloc 3 - titre</label>
+        <label for="settingPillar2Title">Titre méthode 3</label>
         <input type="text" id="settingPillar2Title" data-setting-path="approach.pillars.2.title">
       </div>
       <div class="field">
-        <label for="settingPillar2Text">Bloc 3 - texte</label>
+        <label for="settingPillar2Text">Texte méthode 3</label>
         <input type="text" id="settingPillar2Text" data-setting-path="approach.pillars.2.text">
       </div>
 
       <div class="form-section-title" data-settings-title="contact">Section Contact</div>
-      <div class="field">
-        <label for="settingContactTitleMain">Première ligne du titre</label>
-        <input type="text" id="settingContactTitleMain" data-setting-path="contact.titleMain">
-      </div>
-      <div class="field">
-        <label for="settingContactTitleAccent">Mot ou phrase en italique</label>
-        <input type="text" id="settingContactTitleAccent" data-setting-path="contact.titleAccent">
-      </div>
-      <div class="field">
-        <label for="settingContactHeading">Sous-titre</label>
-        <input type="text" id="settingContactHeading" data-setting-path="contact.heading">
+      <div class="field full">
+        <label for="settingContactText">Texte de la section Contact</label>
+        <textarea id="settingContactText" data-setting-path="contact.text"></textarea>
       </div>
       <div class="field">
         <label for="settingContactEmail">Email affiché</label>
@@ -545,10 +538,6 @@
       <div class="field">
         <label for="settingContactFormNote">Note sous le formulaire</label>
         <input type="text" id="settingContactFormNote" data-setting-path="contact.formNote">
-      </div>
-      <div class="field full">
-        <label for="settingContactText">Texte de présentation</label>
-        <textarea id="settingContactText" data-setting-path="contact.text"></textarea>
       </div>
 
       <div class="form-section-title" data-settings-title="socials">Réseaux sociaux</div>
@@ -582,7 +571,7 @@
 
   <section class="layout" style="margin-top: 28px;">
     <div class="panel">
-      <h2>Ajouter</h2>
+      <h2 id="projectFormTitle">Ajouter un projet</h2>
       <form class="form" id="projectForm">
         <div class="field">
           <label for="projectName">Nom du projet</label>
@@ -617,11 +606,13 @@
           <textarea id="projectDetails" placeholder="Matériaux, surface, contexte du projet..."></textarea>
         </div>
         <div class="field full">
-          <label for="projectPhotos">Photos</label>
+          <label for="projectPhotos" id="projectPhotosLabel">Photos</label>
           <input type="file" id="projectPhotos" accept="image/*" multiple required>
+          <p class="field-note" id="projectPhotosHint">Ajoute au moins une photo pour publier un nouveau projet.</p>
         </div>
+        <button class="button secondary hidden" id="cancelEditButton" type="button">Annuler la modification</button>
         <button class="submit" id="submitButton" type="submit">
-          Enregistrer
+          <span id="submitButtonLabel">Enregistrer</span>
           <span>→</span>
         </button>
       </form>
@@ -655,11 +646,19 @@
   let siteSettingsDocId = DEFAULT_SITE_SETTINGS_DOC_ID;
   let imgbbUploadAvailable = false;
   let projects = [];
+  let editingProjectId = null;
+  let editingProjectImageUrls = [];
 
   const statusEl = document.getElementById('status');
   const form = document.getElementById('projectForm');
+  const projectFormTitle = document.getElementById('projectFormTitle');
+  const projectPhotos = document.getElementById('projectPhotos');
+  const projectPhotosLabel = document.getElementById('projectPhotosLabel');
+  const projectPhotosHint = document.getElementById('projectPhotosHint');
+  const cancelEditButton = document.getElementById('cancelEditButton');
   const settingsForm = document.getElementById('settingsForm');
   const submitButton = document.getElementById('submitButton');
+  const submitButtonLabel = document.getElementById('submitButtonLabel');
   const settingsSubmitButton = document.getElementById('settingsSubmitButton');
   const projectsEl = document.getElementById('projects');
   const adminToast = document.getElementById('adminToast');
@@ -710,7 +709,7 @@
         throw new Error(config.error || 'Configuration indisponible');
       }
       if (!window.firebase) {
-        throw new Error('Firebase SDK indisponible');
+        throw new Error('Service de sauvegarde indisponible');
       }
 
       if (!firebase.apps.length) {
@@ -726,7 +725,7 @@
       await loadSettings();
 
       if (!imgbbUploadAvailable) {
-        setStatus('Contenu prêt. Ajoute la clé ImgBB pour publier des projets avec photos.');
+        setStatus('Contenu prêt. La publication de photos doit encore être configurée.');
       } else {
         setStatus('Administration prête.');
       }
@@ -734,7 +733,7 @@
       await loadProjects();
     } catch (error) {
       console.error(error);
-      setStatus(`Erreur : ${error.message}`);
+      setStatus('Impossible de charger l\'administration pour le moment.');
     }
   }
 
@@ -749,6 +748,11 @@
     settingsForm.querySelectorAll('[data-setting-path]').forEach(field => {
       field.value = getByPath(settings, field.dataset.settingPath) || '';
     });
+
+    const aboutTextField = document.getElementById('settingAboutText');
+    if (aboutTextField && !aboutTextField.value && Array.isArray(settings.about?.paragraphs)) {
+      aboutTextField.value = settings.about.paragraphs.filter(Boolean).join('\n\n');
+    }
 
     const socials = normalizeSocials(settings.socials);
     settingsForm.querySelectorAll('[data-social-key]').forEach(field => {
@@ -778,7 +782,7 @@
       showToast('Modifications enregistrées');
     } catch (error) {
       console.error(error);
-      setStatus(`Erreur de sauvegarde : ${error.message}`);
+      setStatus('Impossible d\'enregistrer les modifications pour le moment.');
     } finally {
       settingsSubmitButton.disabled = false;
     }
@@ -877,6 +881,7 @@
             <p class="project-details">${escapeHtml(project.details || 'Aucun détail renseigné')}</p>
           </div>
           <div class="project-actions">
+            <button class="button" type="button" data-edit-id="${escapeAttribute(project.id)}">Modifier</button>
             <button class="button danger" type="button" data-delete-id="${escapeAttribute(project.id)}">Supprimer</button>
           </div>
         </div>
@@ -887,29 +892,45 @@
     projectsEl.querySelectorAll('[data-delete-id]').forEach(button => {
       button.addEventListener('click', () => deleteProject(button.dataset.deleteId, button));
     });
+
+    projectsEl.querySelectorAll('[data-edit-id]').forEach(button => {
+      button.addEventListener('click', () => startEditProject(button.dataset.editId));
+    });
   }
+
+  cancelEditButton.addEventListener('click', () => resetProjectFormMode());
 
   form.addEventListener('submit', async event => {
     event.preventDefault();
 
-    if (!db || !imgbbUploadAvailable) {
-      setStatus('Publication indisponible. Vérifie la configuration des photos.');
+    if (!db) {
+      setStatus('Connexion indisponible. Impossible de sauvegarder pour le moment.');
       return;
     }
 
-    const files = Array.from(document.getElementById('projectPhotos').files || []);
-    if (!files.length) {
+    const files = Array.from(projectPhotos.files || []);
+    if (!editingProjectId && !files.length) {
       setStatus('Ajoute au moins une photo pour ce projet.');
       return;
     }
 
+    if (files.length && !imgbbUploadAvailable) {
+      setStatus('L\'envoi de nouvelles photos est indisponible pour le moment.');
+      return;
+    }
+
     submitButton.disabled = true;
-    setStatus('Upload des photos sur ImgBB...');
+    cancelEditButton.disabled = true;
+    setStatus(files.length ? 'Envoi des photos...' : 'Sauvegarde du projet...');
 
     try {
-      const imageUrls = [];
+      let imageUrls = editingProjectId ? [...editingProjectImageUrls] : [];
       for (const file of files) {
         imageUrls.push(await uploadToImgBB(file));
+      }
+
+      if (editingProjectId && files.length) {
+        imageUrls = imageUrls.slice(editingProjectImageUrls.length);
       }
 
       const project = {
@@ -918,23 +939,79 @@
         location: document.getElementById('projectLocation').value.trim(),
         year: document.getElementById('projectYear').value.trim() || String(new Date().getFullYear()),
         details: document.getElementById('projectDetails').value.trim(),
-        imageUrls,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        imageUrls
       };
 
-      setStatus('Publication du projet...');
-      await db.collection(projectCollection).add(project);
-      form.reset();
-      setStatus('Projet ajouté avec succès.');
-      showToast('Projet ajouté avec succès');
+      if (editingProjectId) {
+        setStatus('Mise à jour du projet...');
+        await db.collection(projectCollection).doc(editingProjectId).update({
+          ...project,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        resetProjectFormMode();
+        setStatus('Projet mis à jour avec succès.');
+        showToast('Projet mis à jour avec succès');
+      } else {
+        setStatus('Publication du projet...');
+        await db.collection(projectCollection).add({
+          ...project,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        form.reset();
+        setStatus('Projet ajouté avec succès.');
+        showToast('Projet ajouté avec succès');
+      }
+
       await loadProjects();
     } catch (error) {
       console.error(error);
-      setStatus(`Erreur : ${error.message}`);
+      setStatus(editingProjectId
+        ? 'Impossible de mettre à jour ce projet pour le moment.'
+        : 'Impossible de publier ce projet pour le moment.');
     } finally {
       submitButton.disabled = false;
+      cancelEditButton.disabled = false;
     }
   });
+
+  function startEditProject(projectId) {
+    const project = projects.find(item => item.id === projectId);
+    if (!project) {
+      setStatus('Projet introuvable. Recharge la page puis réessaie.');
+      return;
+    }
+
+    editingProjectId = project.id;
+    editingProjectImageUrls = Array.isArray(project.imageUrls) ? [...project.imageUrls] : [];
+
+    document.getElementById('projectName').value = project.name || '';
+    document.getElementById('projectCategory').value = project.category || 'résidentiel';
+    document.getElementById('projectLocation').value = project.location || '';
+    document.getElementById('projectYear').value = project.year || '';
+    document.getElementById('projectDetails').value = project.details || '';
+    projectPhotos.value = '';
+    projectPhotos.required = false;
+
+    projectFormTitle.textContent = 'Modifier le projet';
+    projectPhotosLabel.textContent = 'Nouvelles photos';
+    projectPhotosHint.textContent = 'Laisse ce champ vide pour conserver les photos actuelles.';
+    submitButtonLabel.textContent = 'Mettre à jour';
+    cancelEditButton.classList.remove('hidden');
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setStatus(`Modification de ${project.name || 'ce projet'} en cours.`);
+  }
+
+  function resetProjectFormMode() {
+    editingProjectId = null;
+    editingProjectImageUrls = [];
+    form.reset();
+    projectPhotos.required = true;
+    projectFormTitle.textContent = 'Ajouter un projet';
+    projectPhotosLabel.textContent = 'Photos';
+    projectPhotosHint.textContent = 'Ajoute au moins une photo pour publier un nouveau projet.';
+    submitButtonLabel.textContent = 'Enregistrer';
+    cancelEditButton.classList.add('hidden');
+  }
 
   async function deleteProject(projectId, button) {
     if (!db || !projectId) return;
@@ -948,12 +1025,15 @@
 
     try {
       await db.collection(projectCollection).doc(projectId).delete();
+      if (editingProjectId === projectId) {
+        resetProjectFormMode();
+      }
       setStatus('Projet supprimé.');
       showToast('Projet supprimé');
       await loadProjects();
     } catch (error) {
       console.error(error);
-      setStatus(`Erreur de suppression : ${error.message}`);
+      setStatus('Impossible de supprimer ce projet pour le moment.');
       button.disabled = false;
     }
   }
@@ -968,7 +1048,7 @@
     });
     const result = await response.json();
     if (!response.ok || !result.success) {
-      throw new Error(result?.error?.message || 'Upload ImgBB impossible');
+      throw new Error(result?.error?.message || 'Envoi des photos impossible');
     }
     return result.url;
   }
