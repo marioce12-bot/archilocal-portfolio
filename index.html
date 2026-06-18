@@ -1316,7 +1316,7 @@
 
 <!-- NAVIGATION -->
 <nav>
-  <a href="#accueil" class="nav-logo">ARCHI<span>Local</span></a>
+  <a href="#accueil" class="nav-logo" id="navLogo">ARCHI<span>Local</span></a>
   <ul class="nav-links">
     <li><a href="#apropos">À Propos</a></li>
     <li><a href="#galerie">Projets</a></li>
@@ -1733,7 +1733,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">ARCHI<span>Local</span></div>
+  <div class="footer-logo" id="footerLogo">ARCHI<span>Local</span></div>
   <ul class="footer-links">
     <li><a href="#accueil">Accueil</a></li>
     <li><a href="#galerie">Projets</a></li>
@@ -1750,13 +1750,17 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
   const DEFAULT_PROJECT_COLLECTION = 'archilocal_portfolio_projects';
+  const DEFAULT_SETTINGS_COLLECTION = 'archilocal_settings';
+  const DEFAULT_SITE_SETTINGS_DOC_ID = 'site';
   let projectCollection = DEFAULT_PROJECT_COLLECTION;
+  let settingsCollection = DEFAULT_SETTINGS_COLLECTION;
+  let siteSettingsDocId = DEFAULT_SITE_SETTINGS_DOC_ID;
   let db = null;
   let configLoaded = false;
   let configError = '';
   let imgbbUploadAvailable = false;
   let servicesInitPromise = null;
-  let siteConfig = null;
+  let siteConfig = {};
 
   // CUSTOM CURSOR
   const cursor = document.getElementById('cursor');
@@ -1934,10 +1938,11 @@
 
         db = firebase.firestore();
         projectCollection = config.projectCollection || DEFAULT_PROJECT_COLLECTION;
+        settingsCollection = config.settingsCollection || DEFAULT_SETTINGS_COLLECTION;
+        siteSettingsDocId = config.siteSettingsDocId || DEFAULT_SITE_SETTINGS_DOC_ID;
         imgbbUploadAvailable = Boolean(config.imgbbUploadAvailable);
-        siteConfig = config.site || {};
-        applySiteConfig(siteConfig);
         configLoaded = true;
+        await loadSiteSettings();
         await loadProjects();
       } catch (error) {
         console.error(error);
@@ -1949,14 +1954,34 @@
     return servicesInitPromise;
   }
 
+  async function loadSiteSettings() {
+    if (!db) {
+      applySiteConfig({});
+      return;
+    }
+
+    try {
+      const snapshot = await db.collection(settingsCollection).doc(siteSettingsDocId).get();
+      siteConfig = snapshot.exists ? snapshot.data() || {} : {};
+    } catch (error) {
+      console.error(error);
+      siteConfig = {};
+    }
+
+    applySiteConfig(siteConfig);
+  }
+
   function applySiteConfig(site) {
     const hero = site.hero || {};
     const about = site.about || {};
     const approach = site.approach || {};
     const contact = site.contact || {};
-    const socials = Array.isArray(site.socials) ? site.socials : [];
+    const socials = normalizeSocials(site.socials);
+    const brandName = site.brandName || 'ArchiLocal';
 
-    document.title = site.pageTitle || site.brandName || 'ArchiLocal';
+    document.title = site.pageTitle || brandName;
+    renderBrand('navLogo', brandName);
+    renderBrand('footerLogo', brandName);
 
     setText('heroEyebrow', hero.eyebrow);
     setText('heroTitleMain', hero.titleMain);
@@ -1980,12 +2005,43 @@
     setText('contactEmail', contact.email);
     setText('contactLocation', contact.location);
     setText('contactFormNote', contact.formNote);
-    setText('contactSuccessTitle', contact.successTitle);
-    setText('contactSuccessMessage', contact.successMessage);
-    setText('footerCopy', `© ${new Date().getFullYear()} ${site.brandName || 'ArchiLocal'}`);
+    setText('contactSuccessTitle', contact.successTitle || 'Message envoyé avec succès');
+    setText('contactSuccessMessage', contact.successMessage || 'Merci, votre demande a bien été envoyée.');
+    setText('footerCopy', brandName ? `© ${new Date().getFullYear()} ${brandName}` : '');
 
     renderSocials('socialIcons', socials);
     renderSocials('footerSocials', socials);
+  }
+
+  function renderBrand(id, brandName) {
+    const element = document.getElementById(id);
+    if (!element) return;
+
+    const text = brandName || '';
+    if (!text) {
+      element.textContent = '';
+      return;
+    }
+
+    const midpoint = Math.ceil(text.length / 2);
+    element.innerHTML = `${escapeHtml(text.slice(0, midpoint))}<span>${escapeHtml(text.slice(midpoint))}</span>`;
+  }
+
+  function normalizeSocials(socials) {
+    if (Array.isArray(socials)) return socials;
+    if (!socials || typeof socials !== 'object') return [];
+
+    return [
+      { key: 'facebook', label: 'Facebook', icon: 'f' },
+      { key: 'instagram', label: 'Instagram', icon: 'ig' },
+      { key: 'comeup', label: 'ComeUp', icon: 'cu' },
+      { key: 'clarivAfrica', label: 'Clariv Africa', icon: 'ca' },
+      { key: 'linkedin', label: 'LinkedIn', icon: 'in' }
+    ].map(item => ({
+      label: item.label,
+      icon: item.icon,
+      url: typeof socials[item.key] === 'string' ? socials[item.key] : socials[item.key]?.url || ''
+    })).filter(item => item.url);
   }
 
   function setText(id, value) {

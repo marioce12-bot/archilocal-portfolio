@@ -119,6 +119,28 @@
     align-items: start;
   }
 
+  .settings-panel {
+    margin-top: 28px;
+  }
+
+  .form-section-title {
+    grid-column: 1 / -1;
+    margin-top: 12px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(44,44,44,0.1);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .form-section-title:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
   .panel {
     background: rgba(250,250,250,0.88);
     border: 1px solid rgba(44,44,44,0.13);
@@ -298,6 +320,7 @@
       grid-template-columns: 1fr;
     }
     .field.full,
+    .form-section-title,
     .submit {
       grid-column: auto;
     }
@@ -351,6 +374,196 @@
   </section>
 
   <p class="status" id="status">Chargement de la configuration Vercel...</p>
+
+  <section class="panel settings-panel">
+    <h2>Paramètres du site</h2>
+    <form class="form" id="settingsForm">
+      <div class="form-section-title">Identité</div>
+      <div class="field">
+        <label for="settingPageTitle">Titre de page</label>
+        <input type="text" id="settingPageTitle" data-setting-path="pageTitle">
+      </div>
+      <div class="field">
+        <label for="settingBrandName">Nom de marque</label>
+        <input type="text" id="settingBrandName" data-setting-path="brandName">
+      </div>
+
+      <div class="form-section-title">Hero</div>
+      <div class="field">
+        <label for="settingHeroEyebrow">Intro</label>
+        <input type="text" id="settingHeroEyebrow" data-setting-path="hero.eyebrow">
+      </div>
+      <div class="field">
+        <label for="settingHeroTitleMain">Titre principal</label>
+        <input type="text" id="settingHeroTitleMain" data-setting-path="hero.titleMain">
+      </div>
+      <div class="field">
+        <label for="settingHeroTitleAccent">Titre accent</label>
+        <input type="text" id="settingHeroTitleAccent" data-setting-path="hero.titleAccent">
+      </div>
+      <div class="field full">
+        <label for="settingHeroSubtitle">Sous-titre</label>
+        <textarea id="settingHeroSubtitle" data-setting-path="hero.subtitle"></textarea>
+      </div>
+
+      <div class="form-section-title">À propos</div>
+      <div class="field">
+        <label for="settingAboutTitleMain">Titre principal</label>
+        <input type="text" id="settingAboutTitleMain" data-setting-path="about.titleMain">
+      </div>
+      <div class="field">
+        <label for="settingAboutTitleAccent">Titre accent</label>
+        <input type="text" id="settingAboutTitleAccent" data-setting-path="about.titleAccent">
+      </div>
+      <div class="field full">
+        <label for="settingAboutParagraph0">Paragraphe 1</label>
+        <textarea id="settingAboutParagraph0" data-setting-path="about.paragraphs.0"></textarea>
+      </div>
+      <div class="field full">
+        <label for="settingAboutParagraph1">Paragraphe 2</label>
+        <textarea id="settingAboutParagraph1" data-setting-path="about.paragraphs.1"></textarea>
+      </div>
+      <div class="field full">
+        <label for="settingAboutParagraph2">Paragraphe 3</label>
+        <textarea id="settingAboutParagraph2" data-setting-path="about.paragraphs.2"></textarea>
+      </div>
+      <div class="field">
+        <label for="settingStat0Number">Stat 1 nombre</label>
+        <input type="text" id="settingStat0Number" data-setting-path="about.stats.0.number">
+      </div>
+      <div class="field">
+        <label for="settingStat0Label">Stat 1 libellé</label>
+        <input type="text" id="settingStat0Label" data-setting-path="about.stats.0.label">
+      </div>
+      <div class="field">
+        <label for="settingStat1Number">Stat 2 nombre</label>
+        <input type="text" id="settingStat1Number" data-setting-path="about.stats.1.number">
+      </div>
+      <div class="field">
+        <label for="settingStat1Label">Stat 2 libellé</label>
+        <input type="text" id="settingStat1Label" data-setting-path="about.stats.1.label">
+      </div>
+      <div class="field">
+        <label for="settingStat2Number">Stat 3 nombre</label>
+        <input type="text" id="settingStat2Number" data-setting-path="about.stats.2.number">
+      </div>
+      <div class="field">
+        <label for="settingStat2Label">Stat 3 libellé</label>
+        <input type="text" id="settingStat2Label" data-setting-path="about.stats.2.label">
+      </div>
+      <div class="field">
+        <label for="settingStat3Number">Stat 4 nombre</label>
+        <input type="text" id="settingStat3Number" data-setting-path="about.stats.3.number">
+      </div>
+      <div class="field">
+        <label for="settingStat3Label">Stat 4 libellé</label>
+        <input type="text" id="settingStat3Label" data-setting-path="about.stats.3.label">
+      </div>
+
+      <div class="form-section-title">Approche</div>
+      <div class="field">
+        <label for="settingApproachTitleMain">Titre principal</label>
+        <input type="text" id="settingApproachTitleMain" data-setting-path="approach.titleMain">
+      </div>
+      <div class="field">
+        <label for="settingApproachTitleAccent">Titre accent</label>
+        <input type="text" id="settingApproachTitleAccent" data-setting-path="approach.titleAccent">
+      </div>
+      <div class="field full">
+        <label for="settingApproachDescription">Description</label>
+        <textarea id="settingApproachDescription" data-setting-path="approach.description"></textarea>
+      </div>
+      <div class="field">
+        <label for="settingPillar0Title">Pilier 1 titre</label>
+        <input type="text" id="settingPillar0Title" data-setting-path="approach.pillars.0.title">
+      </div>
+      <div class="field">
+        <label for="settingPillar0Text">Pilier 1 texte</label>
+        <input type="text" id="settingPillar0Text" data-setting-path="approach.pillars.0.text">
+      </div>
+      <div class="field">
+        <label for="settingPillar1Title">Pilier 2 titre</label>
+        <input type="text" id="settingPillar1Title" data-setting-path="approach.pillars.1.title">
+      </div>
+      <div class="field">
+        <label for="settingPillar1Text">Pilier 2 texte</label>
+        <input type="text" id="settingPillar1Text" data-setting-path="approach.pillars.1.text">
+      </div>
+      <div class="field">
+        <label for="settingPillar2Title">Pilier 3 titre</label>
+        <input type="text" id="settingPillar2Title" data-setting-path="approach.pillars.2.title">
+      </div>
+      <div class="field">
+        <label for="settingPillar2Text">Pilier 3 texte</label>
+        <input type="text" id="settingPillar2Text" data-setting-path="approach.pillars.2.text">
+      </div>
+
+      <div class="form-section-title">Contact</div>
+      <div class="field">
+        <label for="settingContactTitleMain">Titre principal</label>
+        <input type="text" id="settingContactTitleMain" data-setting-path="contact.titleMain">
+      </div>
+      <div class="field">
+        <label for="settingContactTitleAccent">Titre accent</label>
+        <input type="text" id="settingContactTitleAccent" data-setting-path="contact.titleAccent">
+      </div>
+      <div class="field">
+        <label for="settingContactHeading">Accroche</label>
+        <input type="text" id="settingContactHeading" data-setting-path="contact.heading">
+      </div>
+      <div class="field">
+        <label for="settingContactEmail">Email affiché</label>
+        <input type="email" id="settingContactEmail" data-setting-path="contact.email">
+      </div>
+      <div class="field">
+        <label for="settingContactLocation">Localisation</label>
+        <input type="text" id="settingContactLocation" data-setting-path="contact.location">
+      </div>
+      <div class="field">
+        <label for="settingContactFormNote">Note formulaire</label>
+        <input type="text" id="settingContactFormNote" data-setting-path="contact.formNote">
+      </div>
+      <div class="field">
+        <label for="settingContactSuccessTitle">Titre succès</label>
+        <input type="text" id="settingContactSuccessTitle" data-setting-path="contact.successTitle">
+      </div>
+      <div class="field">
+        <label for="settingContactSuccessMessage">Message succès</label>
+        <input type="text" id="settingContactSuccessMessage" data-setting-path="contact.successMessage">
+      </div>
+      <div class="field full">
+        <label for="settingContactText">Texte</label>
+        <textarea id="settingContactText" data-setting-path="contact.text"></textarea>
+      </div>
+
+      <div class="form-section-title">Réseaux sociaux</div>
+      <div class="field">
+        <label for="settingSocialFacebook">Facebook</label>
+        <input type="url" id="settingSocialFacebook" data-social-key="facebook">
+      </div>
+      <div class="field">
+        <label for="settingSocialInstagram">Instagram</label>
+        <input type="url" id="settingSocialInstagram" data-social-key="instagram">
+      </div>
+      <div class="field">
+        <label for="settingSocialComeup">ComeUp</label>
+        <input type="url" id="settingSocialComeup" data-social-key="comeup">
+      </div>
+      <div class="field">
+        <label for="settingSocialClarivAfrica">Clariv Africa</label>
+        <input type="url" id="settingSocialClarivAfrica" data-social-key="clarivAfrica">
+      </div>
+      <div class="field full">
+        <label for="settingSocialLinkedin">LinkedIn</label>
+        <input type="url" id="settingSocialLinkedin" data-social-key="linkedin">
+      </div>
+
+      <button class="submit" id="settingsSubmitButton" type="submit">
+        Sauvegarder les paramètres
+        <span>→</span>
+      </button>
+    </form>
+  </section>
 
   <section class="layout" style="margin-top: 28px;">
     <div class="panel">
@@ -410,14 +623,27 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
   const DEFAULT_PROJECT_COLLECTION = 'archilocal_portfolio_projects';
+  const DEFAULT_SETTINGS_COLLECTION = 'archilocal_settings';
+  const DEFAULT_SITE_SETTINGS_DOC_ID = 'site';
+  const SOCIAL_DEFINITIONS = [
+    { key: 'facebook', label: 'Facebook', icon: 'f' },
+    { key: 'instagram', label: 'Instagram', icon: 'ig' },
+    { key: 'comeup', label: 'ComeUp', icon: 'cu' },
+    { key: 'clarivAfrica', label: 'Clariv Africa', icon: 'ca' },
+    { key: 'linkedin', label: 'LinkedIn', icon: 'in' }
+  ];
   let db = null;
   let projectCollection = DEFAULT_PROJECT_COLLECTION;
+  let settingsCollection = DEFAULT_SETTINGS_COLLECTION;
+  let siteSettingsDocId = DEFAULT_SITE_SETTINGS_DOC_ID;
   let imgbbUploadAvailable = false;
   let projects = [];
 
   const statusEl = document.getElementById('status');
   const form = document.getElementById('projectForm');
+  const settingsForm = document.getElementById('settingsForm');
   const submitButton = document.getElementById('submitButton');
+  const settingsSubmitButton = document.getElementById('settingsSubmitButton');
   const projectsEl = document.getElementById('projects');
 
   initializeAdmin();
@@ -441,19 +667,133 @@
 
       db = firebase.firestore();
       projectCollection = config.projectCollection || DEFAULT_PROJECT_COLLECTION;
+      settingsCollection = config.settingsCollection || DEFAULT_SETTINGS_COLLECTION;
+      siteSettingsDocId = config.siteSettingsDocId || DEFAULT_SITE_SETTINGS_DOC_ID;
       imgbbUploadAvailable = Boolean(config.imgbbUploadAvailable);
 
+      await loadSettings();
+
       if (!imgbbUploadAvailable) {
-        setStatus('Configuration incomplète : ajoute IMGBB_API_KEY dans Vercel.');
-        return;
+        setStatus('Connecté à Firestore. Paramètres éditables. Ajoute IMGBB_API_KEY dans Vercel pour publier des projets avec photos.');
+      } else {
+        setStatus(`Connecté à Firestore. Collections : ${settingsCollection} / ${projectCollection}`);
       }
 
-      setStatus(`Connecté à Firestore. Collection : ${projectCollection}`);
       await loadProjects();
     } catch (error) {
       console.error(error);
       setStatus(`Erreur : ${error.message}`);
     }
+  }
+
+  async function loadSettings() {
+    if (!db) return;
+
+    const snapshot = await db.collection(settingsCollection).doc(siteSettingsDocId).get();
+    populateSettingsForm(snapshot.exists ? snapshot.data() || {} : {});
+  }
+
+  function populateSettingsForm(settings) {
+    settingsForm.querySelectorAll('[data-setting-path]').forEach(field => {
+      field.value = getByPath(settings, field.dataset.settingPath) || '';
+    });
+
+    const socials = normalizeSocials(settings.socials);
+    settingsForm.querySelectorAll('[data-social-key]').forEach(field => {
+      const social = socials.find(item => item.key === field.dataset.socialKey);
+      field.value = social?.url || '';
+    });
+  }
+
+  settingsForm.addEventListener('submit', async event => {
+    event.preventDefault();
+
+    if (!db) {
+      setStatus('Configuration Firebase indisponible. Impossible de sauvegarder les paramètres.');
+      return;
+    }
+
+    settingsSubmitButton.disabled = true;
+    setStatus('Sauvegarde des paramètres du site...');
+
+    try {
+      const settings = buildSettingsFromForm();
+      await db.collection(settingsCollection).doc(siteSettingsDocId).set({
+        ...settings,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+      setStatus('Paramètres du site sauvegardés.');
+    } catch (error) {
+      console.error(error);
+      setStatus(`Erreur de sauvegarde des paramètres : ${error.message}`);
+    } finally {
+      settingsSubmitButton.disabled = false;
+    }
+  });
+
+  function buildSettingsFromForm() {
+    const settings = {};
+
+    settingsForm.querySelectorAll('[data-setting-path]').forEach(field => {
+      setByPath(settings, field.dataset.settingPath, field.value.trim());
+    });
+
+    settings.socials = SOCIAL_DEFINITIONS.map(definition => {
+      const input = settingsForm.querySelector(`[data-social-key="${definition.key}"]`);
+      return {
+        key: definition.key,
+        label: definition.label,
+        icon: definition.icon,
+        url: input ? input.value.trim() : ''
+      };
+    }).filter(item => item.url);
+
+    return settings;
+  }
+
+  function getByPath(source, path) {
+    return path.split('.').reduce((value, part) => value?.[part], source);
+  }
+
+  function setByPath(target, path, value) {
+    const parts = path.split('.');
+    let current = target;
+
+    parts.forEach((part, index) => {
+      const isLast = index === parts.length - 1;
+      const nextPart = parts[index + 1];
+
+      if (isLast) {
+        current[part] = value;
+        return;
+      }
+
+      if (current[part] === undefined) {
+        current[part] = /^\d+$/.test(nextPart) ? [] : {};
+      }
+
+      current = current[part];
+    });
+  }
+
+  function normalizeSocials(socials) {
+    if (Array.isArray(socials)) {
+      return socials.map(item => ({
+        key: item.key || SOCIAL_DEFINITIONS.find(definition => definition.label === item.label)?.key || '',
+        label: item.label || '',
+        icon: item.icon || '',
+        url: item.url || ''
+      }));
+    }
+
+    if (!socials || typeof socials !== 'object') return [];
+
+    return SOCIAL_DEFINITIONS.map(definition => ({
+      ...definition,
+      url: typeof socials[definition.key] === 'string'
+        ? socials[definition.key]
+        : socials[definition.key]?.url || ''
+    }));
   }
 
   async function loadProjects() {
