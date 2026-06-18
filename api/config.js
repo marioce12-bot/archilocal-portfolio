@@ -29,6 +29,7 @@ module.exports = function handler(req, res) {
       messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
       appId: process.env.FIREBASE_APP_ID
     },
+    projectCollection: process.env.FIRESTORE_PROJECTS_COLLECTION || 'archilocalProjects',
     imgbbUploadAvailable: Boolean(process.env.IMGBB_API_KEY)
   });
 };

@@ -1523,7 +1523,8 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 <script>
-  const PROJECT_COLLECTION = 'archilocalProjects';
+  const DEFAULT_PROJECT_COLLECTION = 'archilocalProjects';
+  let projectCollection = DEFAULT_PROJECT_COLLECTION;
   let db = null;
   let configLoaded = false;
   let configError = '';
@@ -1680,6 +1681,7 @@
         }
 
         db = firebase.firestore();
+        projectCollection = config.projectCollection || DEFAULT_PROJECT_COLLECTION;
         imgbbUploadAvailable = Boolean(config.imgbbUploadAvailable);
         configLoaded = true;
         await loadProjects();
@@ -1751,7 +1753,7 @@
   async function loadProjects() {
     if (!db) return;
     try {
-      const snapshot = await db.collection(PROJECT_COLLECTION).orderBy('createdAt', 'desc').get();
+      const snapshot = await db.collection(projectCollection).orderBy('createdAt', 'desc').get();
       const projects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       renderDynamicProjects(projects);
     } catch (error) {
@@ -1809,7 +1811,7 @@
       };
 
       setAdminStatus('Enregistrement du projet dans Firebase...');
-      await db.collection(PROJECT_COLLECTION).add(project);
+      await db.collection(projectCollection).add(project);
       adminForm.reset();
       setAdminStatus('Projet ajouté avec succès.');
       showNotif('Projet ajouté avec succès ✦');
