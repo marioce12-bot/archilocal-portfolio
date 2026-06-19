@@ -361,27 +361,49 @@
 
   .admin-toast {
     position: fixed;
-    right: 24px;
-    bottom: 24px;
-    z-index: 50;
-    max-width: min(360px, calc(100% - 48px));
-    padding: 16px 20px;
+    left: 50%;
+    top: 50%;
+    z-index: 80;
+    min-width: min(360px, calc(100% - 48px));
+    max-width: min(460px, calc(100% - 48px));
+    padding: 24px 28px;
     background: var(--gold);
     color: var(--dark);
-    box-shadow: 0 18px 48px rgba(44,44,44,0.18);
+    box-shadow: 0 26px 80px rgba(44,44,44,0.24);
     font-family: 'Space Mono', monospace;
-    font-size: 10px;
+    font-size: 12px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    transform: translateY(24px);
+    text-align: center;
+    transform: translate(-50%, -42%);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.25s ease, transform 0.25s ease;
   }
 
+  .admin-toast::before {
+    content: '✓';
+    display: block;
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 14px;
+    border: 1px solid rgba(250,250,250,0.52);
+    border-radius: 999px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 24px;
+    line-height: 39px;
+    letter-spacing: 0;
+  }
+
   .admin-toast.show {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate(-50%, -50%);
+  }
+
+  .submit.is-saving,
+  .button.is-saving {
+    opacity: 0.68;
+    cursor: wait;
   }
 
   @media (max-width: 900px) {
@@ -836,6 +858,9 @@
     }
 
     settingsSubmitButton.disabled = true;
+    settingsSubmitButton.classList.add('is-saving');
+    const previousSettingsButtonHtml = settingsSubmitButton.innerHTML;
+    settingsSubmitButton.innerHTML = 'Sauvegarde en cours... <span>⌛</span>';
     setStatus('Sauvegarde en cours...');
 
     try {
@@ -845,13 +870,15 @@
         ...settings,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
-      setStatus('Modifications enregistrées.');
-      showToast('Modifications enregistrées');
+      setStatus('Modification appliquée.');
+      showToast('Modification appliquée');
     } catch (error) {
       console.error(error);
-      setStatus('Impossible d\'enregistrer les modifications pour le moment.');
+      setStatus(error.message || 'Impossible d\'enregistrer les modifications pour le moment.');
     } finally {
       settingsSubmitButton.disabled = false;
+      settingsSubmitButton.classList.remove('is-saving');
+      settingsSubmitButton.innerHTML = previousSettingsButtonHtml;
     }
   });
 
@@ -1135,18 +1162,27 @@
   }
 
   async function uploadToImgBB(file) {
-    const formData = new FormData();
-    formData.append('image', file);
+    const image = await fileToDataUrl(file);
 
     const response = await fetch('/api/imgbb-upload', {
       method: 'POST',
-      body: formData
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image, name: file.name })
     });
     const result = await response.json();
     if (!response.ok || !result.success) {
       throw new Error(result?.error?.message || 'Envoi des photos impossible');
     }
     return result.url;
+  }
+
+  function fileToDataUrl(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Lecture de la photo impossible'));
+      reader.readAsDataURL(file);
+    });
   }
 
   function setStatus(message) {
