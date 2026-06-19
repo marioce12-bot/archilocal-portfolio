@@ -1355,8 +1355,17 @@
       align-self: start;
     }
     .apropos-grid:not(.no-image) .apropos-content {
+      display: contents;
       gap: 18px;
       min-width: 0;
+    }
+    .apropos-grid:not(.no-image) .apropos-text {
+      grid-column: 2;
+      min-width: 0;
+    }
+    .apropos-grid:not(.no-image) .apropos-stats {
+      grid-column: 1 / -1;
+      margin-top: 8px;
     }
     .apropos-grid:not(.no-image) .section-label {
       font-size: 8px;
@@ -2384,7 +2393,10 @@
       return;
     }
 
-    const maxHeight = Math.max(220, media.clientHeight - 250);
+    const isMobileAboutLayout = window.innerWidth <= 720;
+    const maxHeight = isMobileAboutLayout
+      ? Math.max(110, media.clientHeight - 120)
+      : Math.max(220, media.clientHeight - 250);
     copy.style.setProperty('--about-copy-max', `${maxHeight}px`);
 
     if (copy.scrollHeight > maxHeight + 12) {
