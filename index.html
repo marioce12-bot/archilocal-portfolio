@@ -389,9 +389,75 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 80px;
-    align-items: center;
+    align-items: start;
     max-width: 1200px;
     margin: 0 auto;
+  }
+
+  .apropos-grid.no-image {
+    grid-template-columns: 1fr;
+  }
+
+  .apropos-media {
+    min-height: 520px;
+    height: min(68vh, 640px);
+    background: var(--dark-3);
+    border: 1px solid rgba(44,44,44,0.08);
+    overflow: hidden;
+  }
+  .apropos-media[hidden] { display: none; }
+  .apropos-photo {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    filter: saturate(0.9) contrast(0.96);
+  }
+
+  .apropos-content {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
+  }
+
+  .about-copy {
+    max-height: var(--about-copy-max, none);
+    overflow: hidden;
+    position: relative;
+  }
+  .about-copy.collapsed::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 90px;
+    background: linear-gradient(to bottom, rgba(242,242,240,0), var(--dark-2));
+    pointer-events: none;
+  }
+  .about-copy.expanded {
+    max-height: none;
+  }
+  .about-copy.expanded::after {
+    display: none;
+  }
+
+  .about-toggle {
+    display: none;
+    margin-top: 4px;
+    border: 1px solid rgba(44,44,44,0.22);
+    background: transparent;
+    color: var(--gold);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 12px 18px;
+    cursor: none;
+  }
+  .about-toggle.show {
+    display: inline-flex;
+    width: fit-content;
   }
 
   .apropos-text p {
@@ -1181,6 +1247,10 @@
       grid-template-columns: 1fr;
       gap: 48px;
     }
+    .apropos-media {
+      min-height: 420px;
+      height: 58vh;
+    }
     .galerie-header {
       align-items: flex-start;
       flex-direction: column;
@@ -1277,6 +1347,10 @@
     .approche-pillars,
     .form-row {
       grid-template-columns: 1fr;
+    }
+    .apropos-media {
+      min-height: 320px;
+      height: 420px;
     }
     .stat-card,
     .pillar {
@@ -1431,13 +1505,21 @@
 
 <!-- À PROPOS -->
 <section id="apropos">
-  <div class="apropos-grid">
-    <div class="apropos-text reveal">
-      <div class="section-label">À Propos</div>
-      <h2 class="section-title"><span id="aboutTitleMain"></span><br><em id="aboutTitleAccent"></em></h2>
-      <div id="aboutParagraphs"></div>
+  <div class="apropos-grid no-image" id="aboutGrid">
+    <div class="apropos-media reveal" id="aboutMedia" hidden>
+      <img class="apropos-photo" id="aboutPhoto" alt="Portrait ArchiLocal">
     </div>
-    <div class="apropos-stats reveal" id="aboutStats"></div>
+    <div class="apropos-content reveal">
+      <div class="apropos-text">
+        <div class="section-label">À Propos</div>
+        <h2 class="section-title"><span id="aboutTitleMain"></span><br><em id="aboutTitleAccent"></em></h2>
+        <div class="about-copy" id="aboutCopy">
+          <div id="aboutParagraphs"></div>
+        </div>
+        <button class="about-toggle" id="aboutToggle" type="button">Voir plus</button>
+      </div>
+      <div class="apropos-stats" id="aboutStats"></div>
+    </div>
   </div>
 </section>
 
@@ -2124,8 +2206,10 @@
 
     setText('aboutTitleMain', DEFAULT_ABOUT.titleMain);
     setText('aboutTitleAccent', DEFAULT_ABOUT.titleAccent);
+    renderAboutImage(about.imageUrl);
     renderParagraphs('aboutParagraphs', about.paragraphs);
     renderStats(about);
+    updateAboutTextClamp();
 
     setTextIfValue('approachTitleMain', approach.titleMain);
     setTextIfValue('approachTitleAccent', approach.titleAccent);
@@ -2157,6 +2241,7 @@
     const experienceYears = custom.experienceYears || defaults.experienceYears;
 
     return {
+      imageUrl: custom.imageUrl || '',
       paragraphs: textParagraphs.length ? textParagraphs : (customParagraphs.length ? customParagraphs : defaults.paragraphs),
       experienceYears,
       stats: [
@@ -2207,6 +2292,60 @@
       container.appendChild(paragraph);
     });
   }
+
+  function renderAboutImage(imageUrl) {
+    const grid = document.getElementById('aboutGrid');
+    const media = document.getElementById('aboutMedia');
+    const image = document.getElementById('aboutPhoto');
+    if (!grid || !media || !image) return;
+
+    if (!imageUrl) {
+      media.hidden = true;
+      image.removeAttribute('src');
+      grid.classList.add('no-image');
+      return;
+    }
+
+    image.src = imageUrl;
+    media.hidden = false;
+    grid.classList.remove('no-image');
+    image.onload = updateAboutTextClamp;
+  }
+
+  function updateAboutTextClamp() {
+    const media = document.getElementById('aboutMedia');
+    const copy = document.getElementById('aboutCopy');
+    const toggle = document.getElementById('aboutToggle');
+    if (!copy || !toggle) return;
+
+    copy.classList.remove('collapsed', 'expanded');
+    toggle.classList.remove('show');
+    toggle.textContent = 'Voir plus';
+
+    if (!media || media.hidden) {
+      copy.style.removeProperty('--about-copy-max');
+      return;
+    }
+
+    const maxHeight = Math.max(220, media.clientHeight - 250);
+    copy.style.setProperty('--about-copy-max', `${maxHeight}px`);
+
+    if (copy.scrollHeight > maxHeight + 12) {
+      copy.classList.add('collapsed');
+      toggle.classList.add('show');
+    }
+  }
+
+  document.getElementById('aboutToggle')?.addEventListener('click', event => {
+    const copy = document.getElementById('aboutCopy');
+    if (!copy) return;
+
+    const expanded = copy.classList.toggle('expanded');
+    copy.classList.toggle('collapsed', !expanded);
+    event.currentTarget.textContent = expanded ? 'Voir moins' : 'Voir plus';
+  });
+
+  window.addEventListener('resize', updateAboutTextClamp);
 
   function renderStats(about = DEFAULT_ABOUT) {
     const container = document.getElementById('aboutStats');

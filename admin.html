@@ -334,6 +334,26 @@
     line-height: 1.6;
   }
 
+  .image-preview {
+    width: 100%;
+    min-height: 160px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--dark-3);
+    border: 1px solid rgba(44,44,44,0.1);
+  }
+  .image-preview.show {
+    display: flex;
+  }
+  .image-preview img {
+    width: 100%;
+    max-height: 260px;
+    object-fit: cover;
+    display: block;
+  }
+
   .danger {
     border-color: rgba(157,47,47,0.28);
     color: var(--danger);
@@ -498,6 +518,14 @@
       </div>
 
       <div class="form-section-title" data-settings-title="about">À propos</div>
+      <div class="field full">
+        <label for="settingAboutImageFile">Photo à propos</label>
+        <input type="file" id="settingAboutImageFile" accept="image/*">
+        <input type="hidden" id="settingAboutImageUrl" data-setting-path="about.imageUrl">
+        <p class="field-note">Choisis une photo qui apparaîtra à gauche de la section À propos.</p>
+        <div class="image-preview" id="aboutImagePreview"></div>
+        <button class="button secondary" id="removeAboutImageButton" type="button">Retirer la photo</button>
+      </div>
       <div class="field full">
         <label for="settingAboutText">Texte à propos</label>
         <textarea id="settingAboutText" data-setting-path="about.text"></textarea>
@@ -677,10 +705,31 @@
   const settingsSubmitButton = document.getElementById('settingsSubmitButton');
   const projectsEl = document.getElementById('projects');
   const adminToast = document.getElementById('adminToast');
+  const aboutImageFile = document.getElementById('settingAboutImageFile');
+  const aboutImageUrl = document.getElementById('settingAboutImageUrl');
+  const aboutImagePreview = document.getElementById('aboutImagePreview');
+  const removeAboutImageButton = document.getElementById('removeAboutImageButton');
   let toastTimeout = null;
 
   initializeSettingsTabs();
+  initializeAboutImageControls();
   initializeAdmin();
+
+  function initializeAboutImageControls() {
+    aboutImageFile?.addEventListener('change', () => {
+      const file = aboutImageFile.files?.[0];
+      if (!file) return;
+
+      renderAboutImagePreview(URL.createObjectURL(file));
+    });
+
+    removeAboutImageButton?.addEventListener('click', () => {
+      if (aboutImageFile) aboutImageFile.value = '';
+      if (aboutImageUrl) aboutImageUrl.value = '';
+      renderAboutImagePreview('');
+      showToast('Photo retirée');
+    });
+  }
 
   function initializeSettingsTabs() {
     const tabs = Array.from(document.querySelectorAll('[data-settings-tab]'));
@@ -769,6 +818,8 @@
       aboutTextField.value = settings.about.paragraphs.filter(Boolean).join('\n\n');
     }
 
+    renderAboutImagePreview(settings.about?.imageUrl || '');
+
     const socials = normalizeSocials(settings.socials);
     settingsForm.querySelectorAll('[data-social-key]').forEach(field => {
       const social = socials.find(item => item.key === field.dataset.socialKey);
@@ -788,6 +839,7 @@
     setStatus('Sauvegarde en cours...');
 
     try {
+      await uploadAboutImageIfNeeded();
       const settings = buildSettingsFromForm();
       await db.collection(settingsCollection).doc(siteSettingsDocId).set({
         ...settings,
@@ -821,6 +873,35 @@
     }).filter(item => item.url);
 
     return settings;
+  }
+
+  async function uploadAboutImageIfNeeded() {
+    const file = aboutImageFile?.files?.[0];
+    if (!file) return;
+
+    if (!imgbbUploadAvailable) {
+      throw new Error('L\'envoi de la photo est indisponible pour le moment.');
+    }
+
+    setStatus('Envoi de la photo À propos...');
+    const uploadedUrl = await uploadToImgBB(file);
+    aboutImageUrl.value = uploadedUrl;
+    aboutImageFile.value = '';
+    renderAboutImagePreview(uploadedUrl);
+  }
+
+  function renderAboutImagePreview(imageUrl) {
+    if (!aboutImagePreview) return;
+
+    aboutImagePreview.innerHTML = '';
+    aboutImagePreview.classList.toggle('show', Boolean(imageUrl));
+
+    if (!imageUrl) return;
+
+    const image = document.createElement('img');
+    image.src = imageUrl;
+    image.alt = 'Photo À propos';
+    aboutImagePreview.appendChild(image);
   }
 
   function getByPath(source, path) {
