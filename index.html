@@ -2110,12 +2110,17 @@
   }
 
   function applySiteConfig(site) {
+    const hero = site.hero || {};
     const about = mergeAbout(DEFAULT_ABOUT, site.about || {});
     const approach = site.approach || {};
     const contact = site.contact || {};
     const socials = normalizeSocials(site.socials);
 
     runIntro(site.intro?.text || DEFAULT_INTRO_TEXT);
+
+    setTextIfValue('heroTitleMain', hero.titleMain);
+    setTextIfValue('heroTitleAccent', hero.titleAccent);
+    setTextIfValue('heroSubtitle', hero.subtitle);
 
     setText('aboutTitleMain', DEFAULT_ABOUT.titleMain);
     setText('aboutTitleAccent', DEFAULT_ABOUT.titleAccent);

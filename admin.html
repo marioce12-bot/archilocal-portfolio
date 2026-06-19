@@ -470,6 +470,7 @@
     <form class="form" id="settingsForm">
       <div class="settings-tabs" role="tablist" aria-label="Sections à modifier">
         <button class="settings-tab active" type="button" data-settings-tab="intro">Phrase animée</button>
+        <button class="settings-tab" type="button" data-settings-tab="home">Accueil</button>
         <button class="settings-tab" type="button" data-settings-tab="about">À propos</button>
         <button class="settings-tab" type="button" data-settings-tab="approach">Méthode</button>
         <button class="settings-tab" type="button" data-settings-tab="contact">Contact</button>
@@ -480,6 +481,20 @@
       <div class="field full">
         <label for="settingIntroText">Phrase animée</label>
         <input type="text" id="settingIntroText" data-setting-path="intro.text" placeholder="Welcome to ArchiLocal...">
+      </div>
+
+      <div class="form-section-title" data-settings-title="home">Accueil</div>
+      <div class="field">
+        <label for="settingHeroTitleMain">Titre principal</label>
+        <input type="text" id="settingHeroTitleMain" data-setting-path="hero.titleMain" placeholder="Architecture">
+      </div>
+      <div class="field">
+        <label for="settingHeroTitleAccent">Mot en italique</label>
+        <input type="text" id="settingHeroTitleAccent" data-setting-path="hero.titleAccent" placeholder="Vivante">
+      </div>
+      <div class="field full">
+        <label for="settingHeroSubtitle">Texte d'accueil</label>
+        <textarea id="settingHeroSubtitle" data-setting-path="hero.subtitle" placeholder="Conception d'espaces résidentiels durables..."></textarea>
       </div>
 
       <div class="form-section-title" data-settings-title="about">À propos</div>
