@@ -398,6 +398,10 @@
     grid-template-columns: 1fr;
   }
 
+  .about-mobile-label {
+    display: none;
+  }
+
   .apropos-media {
     min-height: 520px;
     height: min(68vh, 640px);
@@ -1357,17 +1361,17 @@
       grid-column: 1;
     }
     .apropos-grid:not(.no-image) .apropos-content {
-      display: contents;
+      display: flex;
       gap: 18px;
       min-width: 0;
+      order: 3;
+      grid-column: 2;
+      align-self: start;
     }
     .apropos-grid:not(.no-image) .apropos-text {
-      display: contents;
       min-width: 0;
     }
     .apropos-grid:not(.no-image) .about-copy {
-      order: 4;
-      grid-column: 2;
       align-self: start;
     }
     .apropos-grid:not(.no-image) .apropos-stats {
@@ -1375,16 +1379,18 @@
       grid-column: 1 / -1;
       margin-top: 8px;
     }
-    .apropos-grid:not(.no-image) .section-label {
+    .apropos-grid:not(.no-image) .about-mobile-label {
+      display: flex;
       order: 1;
       grid-column: 1 / -1;
       font-size: 15px;
       letter-spacing: 0.34em;
       margin-bottom: 8px;
     }
+    .apropos-grid:not(.no-image) .apropos-text .section-label {
+      display: none;
+    }
     .apropos-grid:not(.no-image) .section-title {
-      order: 3;
-      grid-column: 2;
       font-size: clamp(28px, 9vw, 38px);
       margin-bottom: 14px;
     }
@@ -1404,8 +1410,6 @@
       letter-spacing: 0.12em;
     }
     .apropos-grid:not(.no-image) .about-toggle {
-      order: 5;
-      grid-column: 2;
       font-size: 8px;
       padding: 10px 12px;
       letter-spacing: 0.14em;
@@ -1586,6 +1590,7 @@
 <!-- À PROPOS -->
 <section id="apropos">
   <div class="apropos-grid no-image" id="aboutGrid">
+    <div class="section-label about-mobile-label">À Propos</div>
     <div class="apropos-media reveal" id="aboutMedia" hidden>
       <img class="apropos-photo" id="aboutPhoto" alt="Portrait ArchiLocal">
     </div>
