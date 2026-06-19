@@ -1343,29 +1343,6 @@
     #apropos::before {
       display: none;
     }
-    .apropos-grid:not(.no-image) {
-      grid-template-columns: minmax(118px, 40%) minmax(0, 1fr);
-      gap: 16px;
-      align-items: stretch;
-    }
-    .apropos-grid:not(.no-image) .section-label {
-      font-size: 8px;
-      letter-spacing: 0.16em;
-      margin-bottom: 12px;
-    }
-    .apropos-grid:not(.no-image) .section-title {
-      font-size: clamp(28px, 9vw, 38px);
-      margin-bottom: 14px;
-    }
-    .apropos-grid:not(.no-image) .apropos-text p {
-      font-size: 13px;
-      line-height: 1.65;
-      margin-bottom: 14px;
-    }
-    .apropos-grid:not(.no-image) .apropos-content {
-      gap: 18px;
-      min-width: 0;
-    }
     .apropos-stats,
     .approche-pillars,
     .form-row {
@@ -1374,25 +1351,6 @@
     .apropos-media {
       min-height: 320px;
       height: 420px;
-    }
-    .apropos-grid:not(.no-image) .apropos-media {
-      min-height: 260px;
-      height: auto;
-    }
-    .apropos-grid:not(.no-image) .stat-card {
-      padding: 20px 14px;
-    }
-    .apropos-grid:not(.no-image) .stat-num {
-      font-size: 34px;
-    }
-    .apropos-grid:not(.no-image) .stat-label {
-      font-size: 8px;
-      letter-spacing: 0.12em;
-    }
-    .apropos-grid:not(.no-image) .about-toggle {
-      font-size: 8px;
-      padding: 10px 12px;
-      letter-spacing: 0.14em;
     }
     .stat-card,
     .pillar {
@@ -1465,20 +1423,6 @@
   }
 
   @media (max-width: 380px) {
-    .apropos-grid:not(.no-image) {
-      grid-template-columns: minmax(96px, 38%) minmax(0, 1fr);
-      gap: 12px;
-    }
-    .apropos-grid:not(.no-image) .apropos-media {
-      min-height: 230px;
-    }
-    .apropos-grid:not(.no-image) .section-title {
-      font-size: 27px;
-    }
-    .apropos-grid:not(.no-image) .apropos-text p {
-      font-size: 12px;
-      line-height: 1.55;
-    }
     .hero-title {
       font-size: 48px;
     }
