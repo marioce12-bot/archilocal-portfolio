@@ -11,10 +11,10 @@ module.exports = async function handler(req, res) {
     });
   }
 
-  if (!process.env.CONTACT_TO_EMAIL || !process.env.CONTACT_FROM_EMAIL) {
+  if (!process.env.CONTACT_FROM_EMAIL) {
     return res.status(500).json({
       success: false,
-      error: 'Missing CONTACT_TO_EMAIL or CONTACT_FROM_EMAIL'
+      error: 'Missing CONTACT_FROM_EMAIL'
     });
   }
 
@@ -26,11 +26,19 @@ module.exports = async function handler(req, res) {
     const projectType = clean(body.typeProjet);
     const budget = clean(body.budget);
     const message = clean(body.message, 5000);
+    const recipientEmail = await getRecipientEmail();
 
     if (!firstName || !email || !message) {
       return res.status(400).json({
         success: false,
         error: 'Prénom, email et message sont requis.'
+      });
+    }
+
+    if (!recipientEmail) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email de réception indisponible.'
       });
     }
 
@@ -54,7 +62,7 @@ module.exports = async function handler(req, res) {
       },
       body: JSON.stringify({
         from: process.env.CONTACT_FROM_EMAIL,
-        to: process.env.CONTACT_TO_EMAIL,
+        to: recipientEmail,
         reply_to: email,
         subject,
         html
@@ -102,6 +110,33 @@ function readJson(req) {
 
 function clean(value, maxLength = 500) {
   return String(value || '').trim().slice(0, maxLength);
+}
+
+async function getRecipientEmail() {
+  const settingsEmail = await getSettingsContactEmail();
+  return settingsEmail || process.env.CONTACT_TO_EMAIL || '';
+}
+
+async function getSettingsContactEmail() {
+  if (!process.env.FIREBASE_PROJECT_ID) return '';
+
+  const settingsCollection = process.env.FIRESTORE_SETTINGS_COLLECTION || 'archilocal_settings';
+  const settingsDocId = process.env.FIRESTORE_SITE_SETTINGS_DOC_ID || 'site';
+  const encodedCollection = encodeURIComponent(settingsCollection);
+  const encodedDoc = encodeURIComponent(settingsDocId);
+  const apiKey = process.env.FIREBASE_API_KEY ? `?key=${encodeURIComponent(process.env.FIREBASE_API_KEY)}` : '';
+  const url = `https://firestore.googleapis.com/v1/projects/${process.env.FIREBASE_PROJECT_ID}/databases/(default)/documents/${encodedCollection}/${encodedDoc}${apiKey}`;
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return '';
+
+    const document = await response.json();
+    return document?.fields?.contact?.mapValue?.fields?.email?.stringValue || '';
+  } catch (error) {
+    console.error(error);
+    return '';
+  }
 }
 
 function escapeHtml(value) {

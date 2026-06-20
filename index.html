@@ -1538,7 +1538,7 @@
 
 <!-- NAVIGATION -->
 <nav>
-  <a href="#accueil" class="nav-logo" id="navLogo">ARCHI<span>Local</span></a>
+  <a href="#accueil" class="nav-logo" id="navLogo">Archi<span>Local</span></a>
   <ul class="nav-links">
     <li><a href="#apropos">À Propos</a></li>
     <li><a href="#galerie">Projets</a></li>
@@ -1986,7 +1986,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">ARCHI<span>Local</span></div>
+  <div class="footer-logo">Archi<span>Local</span></div>
   <ul class="footer-links">
     <li><a href="#accueil">Accueil</a></li>
     <li><a href="#galerie">Projets</a></li>
@@ -2153,7 +2153,14 @@
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prenom, nom, email, typeProjet, budget, message })
+        body: JSON.stringify({
+          prenom,
+          nom,
+          email,
+          typeProjet,
+          budget,
+          message
+        })
       });
       const result = await response.json();
 
