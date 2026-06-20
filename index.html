@@ -2150,22 +2150,34 @@
     showNotif('Envoi du message...');
 
     try {
-      const response = await fetch('/api/contact', {
+      const recipientEmail = getContactRecipientEmail();
+      if (!recipientEmail) {
+        throw new Error('Email de réception non configuré dans l\'admin');
+      }
+
+      const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(recipientEmail)}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
         body: JSON.stringify({
+          _subject: `Nouvelle demande client ArchiLocal - ${prenom}${nom ? ' ' + nom : ''}`,
+          _template: 'table',
+          _captcha: 'false',
           prenom,
-          nom,
+          nom: nom || '-',
           email,
-          typeProjet,
-          budget,
+          type_de_projet: typeProjet || '-',
+          budget: budget || '-',
           message
         })
       });
-      const result = await response.json();
+      const result = await safeReadJson(response);
 
       if (!response.ok || !result.success) {
-        throw new Error(result.error || 'Envoi impossible');
+        openContactMailFallback({ recipientEmail, prenom, nom, email, typeProjet, budget, message });
+        throw new Error('Votre application email a été ouverte pour finaliser l\'envoi');
       }
 
       document.getElementById('contactForm').style.display = 'none';
@@ -2173,10 +2185,41 @@
       showNotif('Message envoyé avec succès ✦');
     } catch (error) {
       console.error(error);
-      showNotif(`Erreur : ${error.message}`);
+      showNotif(error.message || 'Envoi impossible');
     } finally {
       submitButton.disabled = false;
     }
+  }
+
+  function getContactRecipientEmail() {
+    return siteConfig.contact?.email || document.getElementById('contactEmail')?.textContent?.trim() || '';
+  }
+
+  async function safeReadJson(response) {
+    const text = await response.text();
+    if (!text) return {};
+
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      return { success: false, error: text };
+    }
+  }
+
+  function openContactMailFallback({ recipientEmail, prenom, nom, email, typeProjet, budget, message }) {
+    const subject = `Nouvelle demande client ArchiLocal - ${prenom}${nom ? ' ' + nom : ''}`;
+    const body = [
+      `Prénom : ${prenom}`,
+      `Nom : ${nom || '-'}`,
+      `Email : ${email}`,
+      `Type de projet : ${typeProjet || '-'}`,
+      `Budget : ${budget || '-'}`,
+      '',
+      'Message :',
+      message
+    ].join('\n');
+
+    window.location.href = `mailto:${encodeURIComponent(recipientEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
   function showNotif(msg) {
