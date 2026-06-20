@@ -4,20 +4,6 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ success: false, error: 'Method not allowed' });
   }
 
-  if (!process.env.RESEND_API_KEY) {
-    return res.status(500).json({
-      success: false,
-      error: 'Missing Vercel environment variable: RESEND_API_KEY'
-    });
-  }
-
-  if (!process.env.CONTACT_FROM_EMAIL) {
-    return res.status(500).json({
-      success: false,
-      error: 'Missing CONTACT_FROM_EMAIL'
-    });
-  }
-
   try {
     const body = await readJson(req);
     const firstName = clean(body.prenom);
@@ -54,20 +40,9 @@ module.exports = async function handler(req, res) {
       <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
     `;
 
-    const response = await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        from: process.env.CONTACT_FROM_EMAIL,
-        to: recipientEmail,
-        reply_to: email,
-        subject,
-        html
-      })
-    });
+    const response = process.env.RESEND_API_KEY && process.env.CONTACT_FROM_EMAIL
+      ? await sendWithResend({ recipientEmail, replyTo: email, subject, html })
+      : await sendWithFormSubmit({ recipientEmail, subject, html, firstName, lastName, email, projectType, budget, message });
 
     const result = await response.json();
     if (!response.ok) {
@@ -86,6 +61,44 @@ module.exports = async function handler(req, res) {
     });
   }
 };
+
+async function sendWithResend({ recipientEmail, replyTo, subject, html }) {
+  return fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      from: process.env.CONTACT_FROM_EMAIL,
+      to: recipientEmail,
+      reply_to: replyTo,
+      subject,
+      html
+    })
+  });
+}
+
+async function sendWithFormSubmit({ recipientEmail, subject, firstName, lastName, email, projectType, budget, message }) {
+  return fetch(`https://formsubmit.co/ajax/${encodeURIComponent(recipientEmail)}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify({
+      _subject: subject,
+      _template: 'table',
+      _captcha: 'false',
+      prenom: firstName,
+      nom: lastName || '-',
+      email,
+      type_de_projet: projectType || '-',
+      budget: budget || '-',
+      message
+    })
+  });
+}
 
 function readJson(req) {
   return new Promise((resolve, reject) => {
